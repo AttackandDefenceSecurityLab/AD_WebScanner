@@ -23,6 +23,13 @@ AD工作室精心研发漏洞安全扫描器
 - 图形化界面 
 - to be continued
 
-reference
+# 依赖
 
+- requests
+- redis
+- bs4
+- urllib
+- similar
+
+# 参考
 https://github.com/We5ter/Scanners-Box 
