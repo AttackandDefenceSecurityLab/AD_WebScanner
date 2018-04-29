@@ -3,8 +3,7 @@ import threading
 
 class Scanner():
     def __init__(self):
-        #self.url = input("请输入要检测的网址(包括http://或https://)：")
-        self.url = 'http://www.sdlongli.com'
+        self.url = input("请输入要检测的网址(包括http://或https://)：")
         self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36'}
         self.doc_list = ['ASP.txt','ASPX.txt','DIR.txt','JSP.txt','MDB.txt','PHP.txt']
@@ -52,14 +51,3 @@ class Scanner():
 
 Web_scanner = Scanner()
 Web_scanner.more_threads()
-#Web_scanner.combine_url()
-#Web_scanner.judge('http://www.sdlongli.com/index1.asp')  #200
-'''
-try:
-    t = threading.Thread(target=Web_scanner.combine_url,args=(Web_scanner.doc_list[1],))
-    t.run()
-    t.start()
-    t.join()
-except Exception as e:
-    print(e)
-'''
