@@ -64,7 +64,7 @@ def similarities(data, url, length):
     target_url = turn_num(url, length)
     for i in url_list:
         try:
-            if cos(target_url, i) > 0.9995:
+            if cos(target_url, i) > 0.999:
                 print('similar')
                 return 1
         except:
