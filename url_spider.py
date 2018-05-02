@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 from similar import similarities
 import time
-
+import redis
 
 count = 0
 
@@ -56,6 +56,12 @@ class SpiderMain:
         self.domain = urlparse(root).hostname
         self.rootlength = len(self.root)
         self.craw()
+        self.redis_connect()
+
+    def redis_connect():
+        save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
+        self.spider_redis = redis.Redis(connection_pool=save_pool)
+        self.spider_redis.hset('Spider_urls', 'full_urls', self.old_urls)
 
 
     def judge(self, domain, url):  # 判断链接的域名
