@@ -94,9 +94,13 @@ class base:
         +'   Spider_threads : '+str(self.base_linker.hget('input_opt','spider_threads'))))
         '''各模块初始化'''
         self.Spider = SpiderMain(self.url, self.spider_threads)
+        full_urls = self.Spider.urls.old_urls
+        self.base_linker.set('full_urls', full_urls)
+        
 
     def module_check(self):
         '''模块状态检查'''
-        pass
+        self.Spider.check()
+        
 
 base()

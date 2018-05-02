@@ -110,12 +110,24 @@ class SpiderMain:
     def all(self):
         print('[+] ALL ' + str(len(self.urls.old_urls)))
 
+    def check(self):
+    	reponse = requests.get(self.root)
+    	if reponse == 200:
+	    	if len(self.urls.old_urls) > 1:
+	    		print('the status of spider [success]')
+	    		return 1
+	    	else:
+	    		print('the status of spider [fail]')
+	    		return 0
+	   	
+	   	else:
+	   		print('target url error')
+	   		return 0
+
+
 
 if __name__ == '__main__':
     url = 'https://www.andseclab.cn/'
     spider = SpiderMain(url, 100)
-    t1 = time.time()
-    spider.craw()
     print('[+]  All ' + str(len(spider.urls.old_urls)))
-    t2 = time.time()
-    print(t2-t1)
+   
