@@ -58,11 +58,11 @@ class SpiderMain:
         self.craw()
         self.redis_connect()
 
-    def redis_connect():
+    def redis_connect(self):
         #save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
         save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379)
         self.spider_redis = redis.Redis(connection_pool=save_pool)
-        self.spider_redis.hset('Spider_urls', 'full_urls', self.old_urls)
+        self.spider_redis.hset('Spider_urls', 'full_urls', self.urls.old_urls)
 
 
     def judge(self, domain, url):  # 判断链接的域名
@@ -133,7 +133,7 @@ class SpiderMain:
 
 
 if __name__ == '__main__':
-    url = 'https://www.andseclab.cn/'
+    url = 'http://www.leslie2018.com'
     spider = SpiderMain(url, 100)
     print('[+]  All ' + str(len(spider.urls.old_urls)))
    
