@@ -9,8 +9,8 @@ AD工作室精心研发漏洞安全扫描器
 
 - [x] 爬虫 (leslie)  
 - [x] 目录爆破 (Mr. Guo)
-- [x] 模块化设计，框架设计 (Mr.Huang)
-- [ ] 子域名爆破 (Mr. Huang)
+- [x] 模块化设计，框架设计 (Chernobyl)
+- [ ] 子域名爆破 (Chernobyl)
 - [ ] 命令执行类(leslie)                                      
 - [ ] 数据库漏洞扫描(13yyz)    
 - [ ] 弱密码        
