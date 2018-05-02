@@ -59,7 +59,8 @@ class SpiderMain:
         self.redis_connect()
 
     def redis_connect():
-        save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
+        #save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
+        save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379)
         self.spider_redis = redis.Redis(connection_pool=save_pool)
         self.spider_redis.hset('Spider_urls', 'full_urls', self.old_urls)
 
