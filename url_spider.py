@@ -55,6 +55,7 @@ class SpiderMain:
         self.threadnum = threadnum
         self.domain = urlparse(root).hostname
         self.rootlength = len(self.root)
+        self.craw()
 
 
     def judge(self, domain, url):  # 判断链接的域名
