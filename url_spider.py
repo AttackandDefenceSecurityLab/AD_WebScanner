@@ -57,7 +57,7 @@ class SpiderMain:
         self.rootlength = len(self.root)
         self.craw()
         self.redis_connect()
-        self.selfpool = savepool
+        self.savepool = savepool
 
     def redis_connect(self):
         #save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
