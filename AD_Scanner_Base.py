@@ -102,7 +102,7 @@ class base:
         print('URL:'+self.base_redis.hget('base','url')+'   URL_Type:'+str(self.base_redis.hget('base','url_type')\
         +'   Spider_threads : '+str(self.base_redis.hget('base','input_opt_spider_threads'))))
         '''各模块初始化'''
-        self.Spider = SpiderMain(self.url, self.spider_threads)
+        self.Spider = SpiderMain(self.url, self.save_pool, self.spider_threads)
 
 
     def module_check(self):
