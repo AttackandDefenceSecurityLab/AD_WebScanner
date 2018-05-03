@@ -56,8 +56,9 @@ class SpiderMain:
         self.domain = urlparse(root).hostname
         self.rootlength = len(self.root)
         self.craw()
-        self.redis_connect()
         self.savepool = savepool
+        self.redis_connect()
+  
 
     def redis_connect(self):
         #save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
