@@ -52,7 +52,7 @@ class SpiderMain:
         self.urls = UrlManager()
         self.down = Downloader()
         self.root = root
-        self.threadnum = threadnum
+        self.threadnum = int(threadnum)
         self.domain = urlparse(root).hostname
         self.rootlength = len(self.root)
         self.craw()
