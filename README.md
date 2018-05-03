@@ -10,7 +10,10 @@ AD工作室精心研发漏洞安全扫描器
 - 构造器的参数为URL+redis+模块特有参数,
 
 ```python
-class demo(url,savepool,....)
+class demo(url,savepool,....):
+  self.module_redis = redis.Redis(connection_pool=save_pool)
+  ...
+  
 ```
 
 - `savepool`由基础模块初始化子模块时提供，子模块可直接使用`redis.Redis(connection_pool=save_pool)`连接共用存储池
