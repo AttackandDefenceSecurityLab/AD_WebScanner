@@ -145,7 +145,7 @@ class AutoSqli(object):
 
     def redis_connect_get(self):
         self.AutoSqli_redis = redis.Redis(connection_pool=self.save_pool)
-        self.urls_set = list(self.AutoSqli_redis.hget('Spider_urls', 'full_urls'))
+        self.urls_list = list(self.AutoSqli_redis.hget('Spider_urls', 'full_urls'))
 
 
     def run(self):
