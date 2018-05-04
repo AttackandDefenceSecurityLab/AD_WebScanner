@@ -21,7 +21,7 @@ def terminal_input():
     ter_opt={}
     url = ''
     try:
-        opts,args = getopt.getopt(sys.argv[1:],"hu:",['url=','spider-threads='])
+        opts,args = getopt.getopt(sys.argv[1:],"hu:S:I:",['url=','spider-threads='])
     except getopt.GetoptError:
       print("Command Error, type -h for usage")
       sys.exit(2)
@@ -39,6 +39,10 @@ def terminal_input():
             ter_opt['url'] = arg
         elif opt in ('--spider-threads'):
             ter_opt['spider_threads'] = int(arg)
+        elif opt in ('-S'):
+            ter_opt['do_spider'] = True
+        elif opt in ('-I'):
+            ter_op['do_sqlmap'] = True
     return ter_opt
 
 class base:
@@ -86,8 +90,9 @@ class base:
         '''
 
         '''url_spider'''
+        for x in self.info.keys():
+            self.base_redis.hset('base',x,self.info[x])
         if 'spider_threads' in self.info.keys():
-            self.base_redis.hset('base','input_opt_spider_threads',self.info['spider_threads'])
             self.spider_threads = self.info['spider_threads']
         else:
             self.spider_threads = 100
