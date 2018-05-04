@@ -2,16 +2,41 @@ import nmap
 import socket
 from urllib import parse
 
-ports = '21, 22, 23, 25, 53, 80, 161, 162, 443, 445, 1080, 1433, 3306, 3389, 8080'
+ports = '21, 22, 23, 25, 53, 80, 139, 161, 162, 443, 445, 1080, 1433, 1521, 3306, 3389, 8080'
+'''
+21      ftp
+22      ssh
+23      telnet
+25      smtp
+53      domain
+80      http
+139     netbios-ssn
+161/162 snmp
+443     https
+445     microsoft-ds
+1080    socks
+1433    mssql
+1521    oracle
+3306    mysql
+3389    ms-wbt-server
+8080    http-proxy
+
+'''
 
 class PortScanner:
     global ports
 
     def __init__(self, url):
+        '''
+        从url中获取主机名，并将其解析为对应的ip
+        '''
         name = parse.urlparse(url).hostname
         self.host = socket.gethostbyname(name)
 
     def ports_scan(self):
+        '''
+        使用nmap对指定的端口进行扫描，并将每个端口的扫描结果逐一输出
+        '''
         host = self.host
         try:
             nm = nmap.PortScanner()
