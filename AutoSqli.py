@@ -78,6 +78,7 @@ class base_Sqli(object):
         if len(self.data) == 0:
             print('not injection:\t')
             self.flag = False
+
         else:
             print('injection: %s' % (self.target))
             self.flag = True
