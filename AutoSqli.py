@@ -149,7 +149,7 @@ class AutoSqli(object):
 
 
     def run(self):
-        for url in self.urls_set:
+        for url in self.urls_list:
             t = base_Sqli(url)
             t._run()
             if t.flag == True:
