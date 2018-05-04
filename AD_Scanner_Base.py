@@ -40,9 +40,9 @@ def terminal_input():
         elif opt in ('--spider-threads'):
             ter_opt['spider_threads'] = int(arg)
         elif opt in ('-S'):
-            ter_opt['do_spider'] = True
+            ter_opt['spider_args'] = arg
         elif opt in ('-I'):
-            ter_op['do_sqlmap'] = True
+            ter_op['sqlmap_args'] = arg
     return ter_opt
 
 class base:
@@ -92,6 +92,7 @@ class base:
         '''url_spider'''
         for x in self.info.keys():
             self.base_redis.hset('base',x,self.info[x])
+            print(self.base_redis.hget('base',x))
         if 'spider_threads' in self.info.keys():
             self.spider_threads = self.info['spider_threads']
         else:
