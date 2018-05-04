@@ -1,5 +1,7 @@
 #Author:Chernobyl   2018/5/2
-from url_spider import SpiderMain
+from url_spider import *
+from AutoSqli import *
+#from Burp_force_directory import *  尚未搞定
 import re
 import os
 import sys
@@ -42,7 +44,7 @@ def terminal_input():
         elif opt in ('-S'):
             ter_opt['spider_args'] = arg
         elif opt in ('-I'):
-            ter_op['sqlmap_args'] = arg
+            ter_opt['sqlmap_args'] = arg
     return ter_opt
 
 class base:
@@ -92,7 +94,8 @@ class base:
         '''url_spider'''
         for x in self.info.keys():
             self.base_redis.hset('base',x,self.info[x])
-            print(self.base_redis.hget('base',x))
+        for x in self.base_redis.hkeys('base'):
+            print(x+':'+self.base_redis.hget('base',x),end = '    ')
         if 'spider_threads' in self.info.keys():
             self.spider_threads = self.info['spider_threads']
         else:
@@ -106,11 +109,11 @@ class base:
         self.base_redis = redis.Redis(connection_pool=self.save_pool)
         self.url_check(self.url)
         self.opt_handler()
-        print('URL:'+self.base_redis.hget('base','url')+'   URL_Type:'+str(self.base_redis.hget('base','url_type')\
-        +'   Spider_threads : '+str(self.base_redis.hget('base','input_opt_spider_threads'))))
+        '''print('URL:'+self.base_redis.hget('base','url')+'   URL_Type:'+str(self.base_redis.hget('base','url_type')\
+        +'   Spider_threads : '+str(self.base_redis.hget('base','input_opt_spider_threads'))))'''
         '''各模块初始化'''
-        self.Spider = SpiderMain(self.url, self.save_pool, self.spider_threads)
-        self.AutoSQli = AutoSqli(self.save_pool)
+        #self.Spider = SpiderMain(self.url, self.save_pool, self.spider_threads)
+        #self.AutoSQli = AutoSqli(self.save_pool)
 
 
     def module_check(self):
