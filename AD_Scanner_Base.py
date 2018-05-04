@@ -5,6 +5,7 @@ import os
 import sys
 import getopt
 import redis
+from AutoSqli import AutoSqli
 
 def terminal_input():
     '''
@@ -90,7 +91,7 @@ class base:
             self.spider_threads = self.info['spider_threads']
         else:
             self.spider_threads = 100
-            self.base_redis.hset('base','input_opt_spider_threads',self.info['spider_threads'])
+            self.base_redis.hset('base','input_opt_spider_threads', self.spider_threads)
 
     def __init__(self):
         self.info = terminal_input()
@@ -103,6 +104,7 @@ class base:
         +'   Spider_threads : '+str(self.base_redis.hget('base','input_opt_spider_threads'))))
         '''各模块初始化'''
         self.Spider = SpiderMain(self.url, self.save_pool, self.spider_threads)
+        self.AutoSQli = AutoSqli(self.save_pool)
 
 
     def module_check(self):

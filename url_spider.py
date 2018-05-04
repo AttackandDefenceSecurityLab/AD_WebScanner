@@ -140,7 +140,6 @@ class SpiderMain:
         self.spider_redis = redis.Redis(connection_pool=self.savepool)
         self.spider_redis.hset('Spider_urls', 'full_urls', self.urls.old_urls)
 
-
     def judge(self, domain, url):  # 判断链接的域名
         if(url.find(domain) != -1):
             return True
@@ -209,7 +208,7 @@ class SpiderMain:
 
 
 if __name__ == '__main__':
-    url = 'http://www.leslie2018.com'
+    url = 'http://testphp.vulnweb.com:80'
     save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
     spider = SpiderMain(url, save_pool, 100)
     print('[+]  All ' + str(len(spider.urls.old_urls)))
