@@ -90,7 +90,7 @@ class base:
             self.spider_threads = self.info['spider_threads']
         else:
             self.spider_threads = 100
-            self.base_redis.hset('base','input_opt_spider_threads',self.info['spider_threads'])
+            self.base_redis.hset('base','input_opt_spider_threads',self.spider_threads)
 
     def __init__(self):
         self.info = terminal_input()
