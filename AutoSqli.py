@@ -138,9 +138,9 @@ class base_Sqli(object):
 
 class AutoSqli(object):
 
-    def __init__(self):
-        # self.save_pool = save_pool
-        # self.redis_connect_get()
+    def __init__(self,save_pool):
+        self.save_pool = save_pool
+        self.redis_connect_get()
         self.run()
 
     def redis_connect_get(self):
