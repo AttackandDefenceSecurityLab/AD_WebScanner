@@ -2,6 +2,7 @@
 import requests
 import threading
 import redis
+import os
 
 class Scanner():
     def __init__(self, url, save_pool):
@@ -9,21 +10,27 @@ class Scanner():
         self.url = url
         self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36'}
-        self.doc_list = ['ASP.txt','ASPX.txt','DIR.txt','JSP.txt','MDB.txt','PHP.txt']
-        #self.doc_list = ['ASP.txt']
+        #self.doc_list = ['ASP.txt','ASPX.txt','DIR.txt','JSP.txt','MDB.txt','PHP.txt']
+        self.dic_list = []
         #获取到的所存在的url
         self.get_url = []
         self.get_url_len = 0
         self.len = 0
+        self.check = True
+
+
+    def get_dic(self):
+        for root, files, self.dic_list in os.walk('./Burp_force_directory/dictionary'):
+            pass
 
     def more_threads(self):
         '''
         为每个字典创建一个线程
         '''
         threads = []
-        for k in range(0,len(self.doc_list)):
-            print(self.doc_list[k])
-            t = threading.Thread(target=self.combine_url,args=(self.doc_list[k],))
+        for k in range(0,len(self.dic_list)):
+            print(self.dic_list[k])
+            t = threading.Thread(target=self.combine_url,args=(self.dic_list[k],))
             threads.append(t)
 
         for k in threads:
@@ -38,7 +45,7 @@ class Scanner():
         从字典中逐行取出子目录，并将其与传入的网址组合
         '''
         print(doc_name)
-        with open(r'Brup_force_directory\dictionay\\'+doc_name,'r') as file_obj:
+        with open(r'Burp_force_directory\dictionary\\'+doc_name,'r') as file_obj:
             for line in file_obj:
                 test_url = self.url + line
                 #print(test_url)
@@ -60,8 +67,8 @@ class Scanner():
                 if self.len > self.get_url_len:
                     self.get_url_len = self.len
                     try:
-                        self.module_redis.hset('Burp_force_diectory','scanned_url',set(self.get_url))
-                        print(self.module_redis.hget('Burp_force_diectory','scanned_url'))
+                        self.module_redis.hset('Burp_force_directory','scanned_url',set(self.get_url))
+                        print(self.module_redis.hget('Burp_force_directory','scanned_url'))
                     except Exception as p:
                         print(p)
 
@@ -85,7 +92,8 @@ class Scanner():
         self.print_get_url = set(self.print_get_url)
         print(self.get_url)
 
-
+    def finish(self):
+        return self.check
 
 
 if __name__ == '__main__':
