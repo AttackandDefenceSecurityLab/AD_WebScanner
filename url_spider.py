@@ -148,8 +148,6 @@ class SpiderMain:
     def parse(self, page_url, content):  # 解析页面
         if content is None:
             return
-        print('123123--------', page_url)
-        input()
         soup = BeautifulSoup(content, 'lxml')
         news = self.get_new_urls(page_url, soup)
         return news
