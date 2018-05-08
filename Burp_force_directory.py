@@ -39,6 +39,7 @@ class Scanner():
         for k in threads:
             k.join()
 
+        self.check = False
 
     def combine_url(self,doc_name):
         '''
@@ -92,7 +93,7 @@ class Scanner():
         self.print_get_url = set(self.print_get_url)
         print(self.get_url)
 
-    def finish(self):
+    def is_finished(self):
         return self.check
 
 
