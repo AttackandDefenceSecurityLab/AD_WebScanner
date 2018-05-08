@@ -123,22 +123,31 @@ class UrlManager: # 管理url
 
 
 class SpiderMain:
-    def __init__(self, root, savepool, threadnum):
+    def __init__(self, root, savepool):
         self.urls = UrlManager()
         self.down = Downloader()
         self.root = root
-        self.threadnum = int(threadnum)
         self.domain = urlparse(root).hostname
         self.rootlength = len(self.root)
-        self.craw()
         self.savepool = savepool
         self.redis_connect()
-  
+
+    def run(self):
+        self.redis_get()
+        self.function_action(self.action)
+        self.redis_set()
+
+    def redis_get(self):
+        self.action = self.spider_redis.hget('base', 'spider_args')
+        self.threadnum = self.spider_redis.hget('base', 'input_opt_spider_threads')
+
+    def redis_set(self):
+        self.spider_redis.hset('Spider_urls', 'full_urls', self.urls.old_urls)
 
     def redis_connect(self):
         #save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
         self.spider_redis = redis.Redis(connection_pool=self.savepool)
-        self.spider_redis.hset('Spider_urls', 'full_urls', self.urls.old_urls)
+
 
     def judge(self, domain, url):  # 判断链接的域名
         if(url.find(domain) != -1):
@@ -170,7 +179,7 @@ class SpiderMain:
         while self.urls.has_new_url():
             content = []
             th = []
-            for i in list(range(self.threadnum)):
+            for i in list(range(int(self.threadnum))):
                 if self.urls.has_new_url() is False:
                     break
                 new_url = self.urls.get_new_url()
@@ -205,11 +214,15 @@ class SpiderMain:
             print('target url error')
             return 0
 
+    def function_action(self, action):
+        if action == 'craw':
+            self.craw()
 
 
 if __name__ == '__main__':
-    url = 'http://testphp.vulnweb.com:80'
+    url = 'http://www.leslie2018.com'
     save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
-    spider = SpiderMain(url, save_pool, 100)
+    spider = SpiderMain(url, save_pool)
+    spider.run()
     print('[+]  All ' + str(len(spider.urls.old_urls)))
    
