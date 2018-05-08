@@ -130,7 +130,7 @@ class SpiderMain:
         self.redis_set()
         self.finished = 1
 
-    def finished(self):
+    def is_finished(self):
         return self.finished
 
     def redis_get(self):
