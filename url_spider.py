@@ -122,11 +122,16 @@ class SpiderMain:
         self.rootlength = len(self.root)
         self.savepool = savepool
         self.redis_connect()
+        self.finished = 0
 
     def run(self):
         self.redis_get()
         self.function_action(self.action)
         self.redis_set()
+        self.finished = 1
+
+    def finished(self):
+        return self.finished
 
     def redis_get(self):
         self.action = self.spider_redis.hget('base', 'spider_args')
@@ -164,8 +169,12 @@ class SpiderMain:
 
     def craw(self):    # 控制流程，利用多线程发起请求
         self.urls.add_new_url(self.root, self.rootlength)
+        iter = 0
         while self.urls.has_new_url():
+            if iter % 3 == 0:
+                self.redis_set()
             content = []
+            iter += 1
             th = []
             for _ in list(range(int(self.threadnum))):
                 if self.urls.has_new_url() is False:
