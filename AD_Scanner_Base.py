@@ -21,11 +21,14 @@ def terminal_input():
         -u/--url= : 传入的URL
         -h ：帮助
         --spider-threads : 爬虫线程
+        -S : 爬虫参数
+        -I : SQLMAP参数
+        --cookie : 手动输入cookie
     '''
     ter_opt={}
     url = ''
     try:
-        opts,args = getopt.getopt(sys.argv[1:],"hu:S:I:",['url=','spider-threads='])
+        opts,args = getopt.getopt(sys.argv[1:],"hu:S:I:",['url=','spider-threads=','cookie='])
     except getopt.GetoptError:
       print("Command Error, type -h for usage")
       sys.exit(2)
@@ -38,6 +41,9 @@ def terminal_input():
             print("-u/--url= : URL for scanning")
             print("-h : help")
             print('--spider-thread= : Threads num of url_spider module')
+            print('-S : spider args')
+            print('-I : sqlmap_args')
+            print('--cooie : input cooikes')
             sys.exit(0)
         elif opt in ('-u','--url'):
             ter_opt['url'] = arg
@@ -47,6 +53,8 @@ def terminal_input():
             ter_opt['spider_args'] = arg
         elif opt in ('-I'):
             ter_opt['sqlmap_args'] = arg
+        elif opt in ('--cookie'):
+            ter_opt['cookie'] = arg
     return ter_opt
 
 class base:
@@ -95,6 +103,7 @@ class base:
 
         '''url_spider'''
         for x in self.info.keys():
+            print(x)
             self.base_redis.hset('base',x,self.info[x])
         for x in self.base_redis.hkeys('base'):
             print(x+':'+self.base_redis.hget('base',x),end = '    ')
@@ -109,11 +118,11 @@ class base:
         self.url = self.info['url']
         self.save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)#开启本地radis
         self.base_redis = redis.Redis(connection_pool=self.save_pool)
+        self.base_redis.flushdb()
         self.url_check(self.url)
         self.url_type = self.base_redis.hget('base','url_type')
+        input()
         self.opt_handler()
-        '''print('URL:'+self.base_redis.hget('base','url')+'   URL_Type:'+str(self.base_redis.hget('base','url_type')\
-        +'   Spider_threads : '+str(self.base_redis.hget('base','input_opt_spider_threads'))))'''
         '''各模块初始化'''
         print(self.url_type)
         if self.url_type == '2' or self.url_type == '3':
@@ -126,12 +135,14 @@ class base:
         _thread.start_new_thread(self.burp_force_diectory.more_threads,())
 
     def module_check(self):
-        '''模块状态检查'''
-        self.Spider.check()
+        return self.Spider.check() and self.burp_force_diectory.check()
 
 #if '__name__' == '__main__':
 ma = base()
 time.sleep(1000)
+while self.module_check():
+    sleep(5)
+    continue
 os.system("cls")
 print('\nburp:'+str(ma.base_redis.hget('Burp_force_diectory','scanned_url')))
 print('\nspider:'+str(ma.base_redis.hget('Spider_urls', 'full_urls')))
