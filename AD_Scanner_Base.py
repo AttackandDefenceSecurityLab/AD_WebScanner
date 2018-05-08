@@ -1,13 +1,15 @@
 #Author:Chernobyl   2018/5/2
 from url_spider import *
-from AutoSqli import *
-#from Burp_force_directory import *  尚未搞定
+#from AutoSqli import *
+from Burp_force_directory import *
 import re
 import os
 import sys
 import getopt
 import redis
-from AutoSqli import AutoSqli
+import _thread
+import time
+#from AutoSqli import AutoSqli
 
 def terminal_input():
     '''
@@ -108,17 +110,29 @@ class base:
         self.save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)#开启本地radis
         self.base_redis = redis.Redis(connection_pool=self.save_pool)
         self.url_check(self.url)
+        self.url_type = self.base_redis.hget('base','url_type')
         self.opt_handler()
         '''print('URL:'+self.base_redis.hget('base','url')+'   URL_Type:'+str(self.base_redis.hget('base','url_type')\
         +'   Spider_threads : '+str(self.base_redis.hget('base','input_opt_spider_threads'))))'''
         '''各模块初始化'''
-        #self.Spider = SpiderMain(self.url, self.save_pool, self.spider_threads)
-        #self.AutoSQli = AutoSqli(self.save_pool)
-
+        print(self.url_type)
+        if self.url_type == '2' or self.url_type == '3':
+            self.url = 'http://'+self.url
+        print(self.url)
+        input()
+        self.spider = SpiderMain(self.url,self.save_pool)
+        self.burp_force_diectory = Scanner(self.url,self.save_pool)
+        _thread.start_new_thread(self.spider.run,())
+        _thread.start_new_thread(self.burp_force_diectory.more_threads,())
 
     def module_check(self):
         '''模块状态检查'''
         self.Spider.check()
 
-
-base()
+#if '__name__' == '__main__':
+ma = base()
+time.sleep(1000)
+os.system("cls")
+print('\nburp:'+str(ma.base_redis.hget('Burp_force_diectory','scanned_url')))
+print('\nspider:'+str(ma.base_redis.hget('Spider_urls', 'full_urls')))
+input()

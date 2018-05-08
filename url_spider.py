@@ -6,12 +6,6 @@ import time
 import redis
 
 
-dim = 75
-
-'''
-将url转化为特征向量后，计算url之间的余弦相似度
-'''
-
 def turn_num(url, length):
     '''
     转化为特征向量
@@ -20,6 +14,7 @@ def turn_num(url, length):
     :return: url的特征向量
     '''
     url = url[length:]
+    dim = 75
 
     char_index = [i for i in range(len(url)) if url[i] == '/']
     char_index.insert(0, 0)
@@ -54,7 +49,7 @@ def cos(vector1,vector2):
         dot_product += a*b
         normA += a**2
         normB += b**2
-    if normA == 0.0 or normB==0.0:
+    if normA == 0.0 or normB == 0.0:
         return None
     else:
         return dot_product / ((normA*normB)**0.5)
@@ -73,20 +68,16 @@ def similarities(data, url, length):
     for i in url_list:
         try:
             if cos(target_url, i) > 0.999:
-                print('similar')
                 return 1
         except:
             return 0
     return 0
 
 
-
-count = 0
-
 class Downloader:   # 发起请求，获取内容
-    def get(self,url,content):
+    def get(self, url, content):
         try:
-            r = requests.get(url,timeout=10)
+            r = requests.get(url, timeout=5)
             if r.status_code != 200:
                 print('Something Error')
                 return None
@@ -108,7 +99,7 @@ class UrlManager: # 管理url
             self.new_urls.add(url)
 
     def add_new_urls(self,urls, length):
-        if urls is None or len(urls)==0:
+        if urls is None or len(urls) == 0:
             return
         for url in urls:
              self.add_new_url(url, length)
@@ -123,22 +114,35 @@ class UrlManager: # 管理url
 
 
 class SpiderMain:
-    def __init__(self, root, savepool, threadnum):
+    def __init__(self, root, savepool):
         self.urls = UrlManager()
         self.down = Downloader()
         self.root = root
-        self.threadnum = int(threadnum)
         self.domain = urlparse(root).hostname
         self.rootlength = len(self.root)
-        self.craw()
         self.savepool = savepool
         self.redis_connect()
-  
+        self.finished = 0
+
+    def run(self):
+        self.redis_get()
+        self.function_action(self.action)
+        self.redis_set()
+        self.finished = 1
+
+    def finished(self):
+        return self.finished
+
+    def redis_get(self):
+        self.action = self.spider_redis.hget('base', 'spider_args')
+        self.threadnum = self.spider_redis.hget('base', 'input_opt_spider_threads')
+
+    def redis_set(self):
+        self.spider_redis.hset('Spider_urls', 'full_urls', self.urls.old_urls)
 
     def redis_connect(self):
         #save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
         self.spider_redis = redis.Redis(connection_pool=self.savepool)
-        self.spider_redis.hset('Spider_urls', 'full_urls', self.urls.old_urls)
 
     def judge(self, domain, url):  # 判断链接的域名
         if(url.find(domain) != -1):
@@ -146,31 +150,33 @@ class SpiderMain:
         else:
             return  False
 
-    def parse(self, page_url, content): #解析页面
+    def parse(self, page_url, content):  # 解析页面
         if content is None:
             return
         soup = BeautifulSoup(content, 'lxml')
         news = self.get_new_urls(page_url, soup)
         return news
 
-    def get_new_urls(self, page_url, soup): #从页面里面获得a标签列表，并组成新地址
+    def get_new_urls(self, page_url, soup):  # 从页面里面获得a标签列表，并组成新地址
         new_urls = set()
         links = soup.find_all('a')
         for link in links:
             new_url = link.get('href')
             new_full_url = urljoin(page_url, new_url)
-            #if self.Tohttp:
-            #    new_full_url.replace("https", "http")
-            if(self.judge(self.domain, new_full_url)):
+            if self.judge(self.domain, new_full_url):
                 new_urls.add(new_full_url)
         return new_urls
 
     def craw(self):    # 控制流程，利用多线程发起请求
         self.urls.add_new_url(self.root, self.rootlength)
+        iter = 0
         while self.urls.has_new_url():
+            if iter % 3 == 0:
+                self.redis_set()
             content = []
+            iter += 1
             th = []
-            for i in list(range(self.threadnum)):
+            for _ in list(range(int(self.threadnum))):
                 if self.urls.has_new_url() is False:
                     break
                 new_url = self.urls.get_new_url()
@@ -205,11 +211,14 @@ class SpiderMain:
             print('target url error')
             return 0
 
+    def function_action(self, action):
+        if action == 'craw':
+            self.craw()
 
 
 if __name__ == '__main__':
-    url = 'http://testphp.vulnweb.com:80'
+    url = 'http://www.leslie2018.com'
     save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
-    spider = SpiderMain(url, save_pool, 100)
+    spider = SpiderMain(url, save_pool)
+    spider.run()
     print('[+]  All ' + str(len(spider.urls.old_urls)))
-   
