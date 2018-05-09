@@ -16,7 +16,7 @@ class Scanner():
         self.get_url = []
         self.get_url_len = 0
         self.len = 0
-        self.check = True
+        self.check = False
 
 
     def get_dic(self):
@@ -28,6 +28,7 @@ class Scanner():
         为每个字典创建一个线程
         '''
         threads = []
+        self.check = False
         for k in range(0,len(self.dic_list)):
             print(self.dic_list[k])
             t = threading.Thread(target=self.combine_url,args=(self.dic_list[k],))
@@ -39,7 +40,7 @@ class Scanner():
         for k in threads:
             k.join()
 
-        self.check = False
+        self.check = True
 
     def combine_url(self,doc_name):
         '''
