@@ -3,6 +3,7 @@ import requests
 import threading
 import redis
 import os
+import time
 
 class Scanner():
     def __init__(self, url, save_pool):
@@ -16,6 +17,7 @@ class Scanner():
         self.get_url = []
         self.get_url_len = 0
         self.len = 0
+        self.threads_max = 50  # 最大线程数
         self.check = False
 
 
@@ -27,18 +29,20 @@ class Scanner():
         '''
         为每个字典创建一个线程
         '''
+        self.get_dic()
         threads = []
         self.check = False
         for k in range(0,len(self.dic_list)):
             print(self.dic_list[k])
-            t = threading.Thread(target=self.combine_url,args=(self.dic_list[k],))
-            threads.append(t)
+            #t = threading.Thread(target=self.combine_url,args=(self.dic_list[k],))
+            #threads.append(t)
+            self.combine_url(self.dic_list[k])
 
         for k in threads:
             k.start()
 
-        for k in threads:
-            k.join()
+        #for k in threads:
+            #k.join()
 
         self.check = True
 
@@ -50,8 +54,15 @@ class Scanner():
         with open(r'Burp_force_directory\dictionary\\'+doc_name,'r') as file_obj:
             for line in file_obj:
                 test_url = self.url + line
-                #print(test_url)
-                self.judge(test_url.rstrip())
+                # print(test_url)
+                if threading.activeCount() >= self.threads_max:
+                    time.sleep(0.7)
+                else:
+                    t = threading.Thread(target=self.judge, args=(test_url.rstrip(),))
+                    t.start()
+                    # t.join()
+                    # print(threading.activeCount())
+                    # self.judge(test_url.rstrip())
 
     def judge(self, test_url):
         '''
@@ -72,14 +83,16 @@ class Scanner():
                         self.module_redis.hset('Burp_force_directory','scanned_url',set(self.get_url))
                         print(self.module_redis.hget('Burp_force_directory','scanned_url'))
                     except Exception as p:
-                        print(p)
+                        pass
+                        #测试模式下开启报错
+                        #print(p)
 
         except requests.exceptions.Timeout:
             pass
         except Exception as e:
-            #pass
+            pass
             #测试模式下开启报错输出
-            print(e)
+            #print(e)
 
 
     def request(self, test_url):
@@ -103,5 +116,5 @@ if __name__ == '__main__':
     url = 'http://www.sdlongli.com'
     Web_scanner = Scanner(url,save_pool)
     Web_scanner.more_threads()
-    print(Web_scanner.module_redis.hget('Burp_force_diectory','scanned_url'))
-    #print(Web_scanner.module_redis.hget('Burp_force_diectory','scanned_url'))
+    print(Web_scanner.module_redis.hget('Burp_force_directory','scanned_url'))
+    #print(Web_scanner.module_redis.hget('Burp_force_directory','scanned_url'))
