@@ -79,12 +79,13 @@ class Downloader:   # 发起请求，获取内容
         try:
             r = requests.get(url, timeout=5)
             if r.status_code != 200:
-                print('Something Error')
+                #print('Something Error')
                 return None
             content.append(r.text)
             return content
         except:
-            print("ERROR")
+            pass
+            #print("ERROR")
 
 
 class UrlManager: # 管理url
@@ -122,13 +123,13 @@ class SpiderMain:
         self.rootlength = len(self.root)
         self.savepool = savepool
         self.redis_connect()
-        self.finished = 0
+        self.finished = False
 
     def run(self):
         self.redis_get()
         self.function_action(self.action)
         self.redis_set()
-        self.finished = 1
+        self.finished = True
 
     def is_finished(self):
         return self.finished
@@ -138,7 +139,13 @@ class SpiderMain:
         self.threadnum = self.spider_redis.hget('base', 'input_opt_spider_threads')
 
     def redis_set(self):
-        self.spider_redis.hset('Spider_urls', 'full_urls', self.urls.old_urls)
+        print('sepider add!')
+        try:
+            for x in self.urls.old_urls:
+                self.spider_redis.sadd('Spider_full_urls',x)
+        except Exception as e:
+            print(e)
+            input()
 
     def redis_connect(self):
         #save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)

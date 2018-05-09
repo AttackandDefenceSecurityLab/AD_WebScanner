@@ -73,20 +73,11 @@ class Scanner():
             k = self.request(test_url)
             #print(k.status_code)
             if k.status_code == 200:
-                print(test_url)
-                self.get_url.append(test_url)
-                self.len = len(set(self.get_url))
-                print(self.len,self.get_url_len)
-                if self.len > self.get_url_len:
-                    self.get_url_len = self.len
-                    try:
-                        self.module_redis.hset('Burp_force_directory','scanned_url',set(self.get_url))
-                        print(self.module_redis.hget('Burp_force_directory','scanned_url'))
-                    except Exception as p:
-                        pass
-                        #测试模式下开启报错
-                        #print(p)
-
+                try:
+                    print(test_url)
+                    self.module_redis.sadd('Burp_force_directory_url',test_url)
+                except Exception as e:
+                    print(e)
         except requests.exceptions.Timeout:
             pass
         except Exception as e:

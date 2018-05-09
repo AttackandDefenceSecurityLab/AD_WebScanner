@@ -148,6 +148,10 @@ while False in ma.module_check() :
 print('finished')
 input()
 os.system("cls")
-print('\nburp:'+str(ma.base_redis.hget('Burp_force_diectory','scanned_url')))
-print('\nspider:'+str(ma.base_redis.hget('Spider_urls', 'full_urls')))
+print('\nburp:')
+for x in ma.base_redis.smembers('Burp_force_directory_url'):
+    print(x)
+print('\nUrlSpider:')
+for x in ma.base_redis.smembers('Spider_full_urls'):
+    print(x)
 input()
