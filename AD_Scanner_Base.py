@@ -48,7 +48,7 @@ def terminal_input():
         elif opt in ('-u','--url'):
             ter_opt['url'] = arg
         elif opt in ('--spider-threads'):
-            ter_opt['spider_threads'] = int(arg)
+            ter_opt['input_opt_spider_threads'] = int(arg)
         elif opt in ('-S'):
             ter_opt['spider_args'] = arg
         elif opt in ('-I'):
@@ -121,28 +121,32 @@ class base:
         self.base_redis.flushdb()
         self.url_check(self.url)
         self.url_type = self.base_redis.hget('base','url_type')
-        input()
         self.opt_handler()
         '''各模块初始化'''
         print(self.url_type)
         if self.url_type == '2' or self.url_type == '3':
             self.url = 'http://'+self.url
         print(self.url)
-        input()
         self.spider = SpiderMain(self.url,self.save_pool)
         self.burp_force_diectory = Scanner(self.url,self.save_pool)
+
+    def start_modules(self):
         _thread.start_new_thread(self.spider.run,())
         _thread.start_new_thread(self.burp_force_diectory.more_threads,())
 
     def module_check(self):
-        return self.Spider.check() and self.burp_force_diectory.check()
+        return [self.spider.is_finished() ,self.burp_force_diectory.is_finished()]
 
 #if '__name__' == '__main__':
 ma = base()
-time.sleep(1000)
-while self.module_check():
-    sleep(5)
+print('go')
+ma.start_modules()
+while False in ma.module_check() :
+    time.sleep(5)
+    print('stat:',ma.spider.is_finished(),ma.burp_force_diectory.is_finished())
     continue
+print('finished')
+input()
 os.system("cls")
 print('\nburp:'+str(ma.base_redis.hget('Burp_force_diectory','scanned_url')))
 print('\nspider:'+str(ma.base_redis.hget('Spider_urls', 'full_urls')))
