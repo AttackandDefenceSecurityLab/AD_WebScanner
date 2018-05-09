@@ -181,7 +181,7 @@ class SpiderMain:
                     break
                 new_url = self.urls.get_new_url()
 
-                print("craw: " + new_url)
+                # print("craw: " + new_url)
                 t = threading.Thread(target=self.down.get, args=(new_url, content))
                 t.start()
                 th.append(t)
@@ -189,7 +189,7 @@ class SpiderMain:
                 t.join()
             for _str in content:
                 if _str is None:
-                    print("Nothing here")
+                    #print("Nothing here")
                     continue
 
                 new_urls = self.parse(new_url, _str)
@@ -202,13 +202,13 @@ class SpiderMain:
         reponse = requests.get(self.root)
         if reponse == 200:
             if len(self.urls.old_urls) > 1:
-                print('the status of spider [success]')
+                #print('the status of spider [success]')
                 return 1
             else:
-                print('the status of spider [fail]')
+                #print('the status of spider [fail]')
                 return 0
         else:
-            print('target url error')
+            #print('target url error')
             return 0
 
     def function_action(self, action):
