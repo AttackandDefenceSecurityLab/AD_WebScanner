@@ -29,7 +29,9 @@ def terminal_input():
 
     '''
     ter_opt={}
-    parser = argparse.ArgumentParser(description='Short sample app',add_help=True)
+    if len(sys.argv) == 1:
+        sys.argv.append('-h')
+    parser = argparse.ArgumentParser(description='AnD Web Scanner',add_help=True)
     parser.add_argument('-u','--url',help='目标url')
     parser.add_argument('--cookie',default=None,help='扫描器cookie')
     parser.add_argument('-F','--file',default=None,help='输出目标文件')
@@ -37,7 +39,7 @@ def terminal_input():
     parser.add_argument('--spider_threads',default=10,help='全站爬虫模块线程数',type=int)
     parser.add_argument('-I','--sqli_args',default=None,help='SQL注入漏洞扫描模块方法')
     parser.add_argument('-B','--burp_args',default=None,help='路径爆破模块方法')
-    parser.add_argument('--burp_threads',default=50,help='路径爆破模块线程数',type=int)
+    parser.add_argument('--burp_threads',default=10,help='路径爆破模块线程数',type=int)
     args = parser.parse_args()
     for x,y in args._get_kwargs():
         ter_opt[x]=y
