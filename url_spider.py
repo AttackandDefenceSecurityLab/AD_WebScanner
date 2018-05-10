@@ -135,7 +135,7 @@ class SpiderMain:
         return self.finished
 
     def redis_get(self):
-        self.action = self.spider_redis.hget('base', 'spider_args')
+        self.action = self.spider_redis.hget('base', 'spider_arg')
         self.threadnum = self.spider_redis.hget('base', 'spider_threads')
 
     def redis_set(self, url):

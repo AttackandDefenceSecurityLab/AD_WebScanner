@@ -120,7 +120,7 @@ class base:
             num = 0
             print('\n\n'+x+':\n--------------------------------------')
             if self.file_status:
-                print('\n\n'+x+':\n--------------------------------------')
+                print('\n\n'+x+':\n--------------------------------------',file=self.data_file)
             for y in ma.base_redis.smembers(output_dict[x]):
                 print(str(num+1)+':'+y)
                 if self.file_status:
@@ -163,6 +163,7 @@ while False in ma.module_check() :
     time.sleep(5)
     print('stat: spider_finished:',ma.spider.is_finished(),' burp_finished:',ma.burp_force_diectory.is_finished(),end='\r',flush=True)
     continue
+os.system('cls')
 print('finished')
 input()
 ma.print_data()
