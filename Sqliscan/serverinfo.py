@@ -12,7 +12,10 @@ def init():
     signal.signal(signal.SIGINT, signal.SIG_IGN)
 
 def check(urls):
-    """get many domains' server info with multi processing"""
+    """
+    
+    
+    """
 
     domains_info = []  # return in list for termtable input
     results = {}  # store results
