@@ -1,4 +1,4 @@
-#Burp_force_directory
+#Burp_force_directory by xuxu
 import requests
 import threading
 import redis
@@ -8,41 +8,52 @@ from urllib.parse import urlparse
 
 class Scanner():
     def __init__(self, url, save_pool):
-        self.module_redis = redis.Redis(connection_pool=save_pool)
-        self.url = url
+        self.burp_redis = redis.Redis(connection_pool=save_pool)
+        self.url = self.Urlparse(url)
         self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36'}
-        #self.doc_list = ['ASP.txt','ASPX.txt','DIR.txt','JSP.txt','MDB.txt','PHP.txt']
-        self.dic_list = []
-        #获取到的所存在的url
-        self.get_url = []
-        self.get_url_len = 0
-        self.len = 0
-        self.threads_max = 50  # 最大线程数
-        self.check = False
+        self.dic_list = []      #字典名目录
+        self.get_url = []       #获取到的所存在的url
+        self.get_url_len = 0    #获取到的有效url数量（可重复）
+        self.len = 0            #获取到的有效url数量（不重复）
+        self.threads_max = self.get_threads()   # 最大线程数
+        self.check = False      #线程运行状态
 
-    def Urlparse(self):
+    def Urlparse(self, url):
         '''
-        把传入的url进行截取，只要host部分
-        粗糙的test_demo已经写好 = =
+        把传入的url进行截取，只要scheme + netloc部分
         :return:
         '''
-        pass
+        k = urlparse(url)
+        l = (k[0] + '://' + k[1])
+        return l.rstrip()
 
     def get_threads(self):
         '''
         从redis中取线程数，如果返回为None，则默认50
         '''
-        pass
+        return int(self.burp_redis.hget('base','burp_threads'))
+
+    def run(self):
+        '''
+        获取base模块的参数，决定是否运行
+        :return:
+        '''
+        key = self.burp_redis.hget('base','burp_arg')
+        if key == 'run':
+            self.more_threads()
+
 
     def get_dic(self):
+        '''
+        获取字典目录下的文件名到self.dic_list
+        增加把相对路径换成绝对路径的功能
+        :return:
+        '''
         for root, files, self.dic_list in os.walk('./Burp_force_directory/dictionary'):
             pass
 
     def more_threads(self):
-        '''
-        为每个字典创建一个线程
-        '''
         self.get_dic()
         threads = []
         self.check = False
@@ -95,8 +106,8 @@ class Scanner():
                 if self.len > self.get_url_len:
                     self.get_url_len = self.len
                     try:
-                        self.module_redis.hset('Burp_force_directory_scanned_url','scanned_url',set(self.get_url))
-                        print(self.module_redis.hget('Burp_force_directory','scanned_url'))
+                        self.burp_redis.hset('Burp_force_directory_scanned_url','scanned_url',set(self.get_url))
+                        print(self.burp_redis.hget('Burp_force_directory','scanned_url'))
                     except Exception as p:
                         pass
                         #测试模式下开启报错
@@ -105,7 +116,7 @@ class Scanner():
 
                 try:
                     print(test_url)
-                    self.module_redis.sadd('Burp_force_directory_url',test_url)
+                    self.burp_redis.sadd('Burp_force_directory_url',test_url)
                 except Exception as e:
                     print(e)
 
@@ -138,5 +149,5 @@ if __name__ == '__main__':
     url = 'http://www.sdlongli.com'
     Web_scanner = Scanner(url,save_pool)
     Web_scanner.more_threads()
-    print(Web_scanner.module_redis.hget('Burp_force_directory','scanned_url'))
+    print(Web_scanner.burp_redis.hget('Burp_force_directory','scanned_url'))
     #print(Web_scanner.module_redis.hget('Burp_force_directory','scanned_url'))

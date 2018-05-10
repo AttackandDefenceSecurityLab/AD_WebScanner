@@ -12,12 +12,15 @@ def init():
     signal.signal(signal.SIGINT, signal.SIG_IGN)
 
 def check(urls):
-    """get many domains' server info with multi processing"""
+    """
+    
+    
+    """
 
-    domains_info = []  # return in list for termtable input
-    results = {}  # store results
+    domains_info = []  # 
+    results = {}  # 
 
-    childs = []  # store child processes
+    childs = []  #
     max_processes = multiprocessing.cpu_count() * 2
     pool = multiprocessing.Pool(max_processes, init)
 
@@ -39,8 +42,8 @@ def check(urls):
         pool.close()
         pool.join()
 
-    # if user skipped the process, some may not have information
-    # so put - for empty data
+    # 
+    # 
     for url in urls:
         if url in results.keys():
             data = results.get(url)
