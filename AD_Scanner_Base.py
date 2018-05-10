@@ -40,6 +40,7 @@ def terminal_input():
     parser.add_argument('-I','--sqli_args',default=None,help='SQL注入漏洞扫描模块方法')
     parser.add_argument('-B','--burp_args',default=None,help='路径爆破模块方法')
     parser.add_argument('--burp_threads',default=10,help='路径爆破模块线程数',type=int)
+    parser.add_argument('--debug',default=None,help='开启Debug模式')
     args = parser.parse_args()
     for x,y in args._get_kwargs():
         ter_opt[x]=y
@@ -171,20 +172,20 @@ class base:
 #if '__name__' == '__main__':
 ma = base()
 ma.start_modules()
+timer=0
 while False in ma.module_check() :
-    time.sleep(5)
-    print('stat:',end=' ')
+    print('time=%d  stat:'%(timer),end=' ')
     for x in ma.output_dict.keys():
         print('  '+x+':',end='')
         if x == 'Url_Spider':
             print(ma.spider.is_finished(),end='')
         elif x == 'Burp_force_directory':
             print(ma.burp_force_diectory.is_finished(),end='')
-    print('',end='\r',flush=True)
-    #print('stat: spider_finished:',ma.spider.is_finished(),' burp_finished:',ma.burp_force_diectory.is_finished(),end='\r',flush=True)
+    print(' ',end='\r')
+    time.sleep(5)
+    timer+=5
     continue
 os.system('cls')
 print('finished')
-input()
 ma.print_data()
 input()
