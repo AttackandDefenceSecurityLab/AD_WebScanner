@@ -101,7 +101,9 @@ class SqliMain(object):
     def __init__(self,savepool):
         self.savepool = savepool
         self.spider_redis = redis_connect(self.savepool)
-        self.run()
+        action = self.spider_redis.get('sqlmap_args')
+        if action == 'run':
+            self.run()
     def run(self):
         urlset = self.spider_redis.smembers("Spider_full_urls")
         vulnerables = scan(urlset)
