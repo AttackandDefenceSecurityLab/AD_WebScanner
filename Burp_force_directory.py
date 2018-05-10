@@ -4,6 +4,7 @@ import threading
 import redis
 import os
 import time
+from urllib.parse import urlparse
 
 class Scanner():
     def __init__(self, url, save_pool):
@@ -20,6 +21,19 @@ class Scanner():
         self.threads_max = 50  # 最大线程数
         self.check = False
 
+    def Urlparse(self):
+        '''
+        把传入的url进行截取，只要host部分
+        粗糙的test_demo已经写好 = =
+        :return:
+        '''
+        pass
+
+    def get_threads(self):
+        '''
+        从redis中取线程数，如果返回为None，则默认50
+        '''
+        pass
 
     def get_dic(self):
         for root, files, self.dic_list in os.walk('./Burp_force_directory/dictionary'):
@@ -73,7 +87,7 @@ class Scanner():
             k = self.request(test_url)
             #print(k.status_code)
             if k.status_code == 200:
-<<<<<<< HEAD
+
                 print(test_url)
                 self.get_url.append(test_url)
                 self.len = len(set(self.get_url))
@@ -88,13 +102,13 @@ class Scanner():
                         #测试模式下开启报错
                         #print(p)
 
-=======
+
                 try:
                     print(test_url)
                     self.module_redis.sadd('Burp_force_directory_url',test_url)
                 except Exception as e:
                     print(e)
->>>>>>> 1aebc455bfe28de994345e8165bb738b1f964971
+
         except requests.exceptions.Timeout:
             pass
         except Exception as e:
