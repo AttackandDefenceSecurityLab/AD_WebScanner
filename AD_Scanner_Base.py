@@ -5,6 +5,7 @@ import re
 import os
 import sys
 import getopt
+import argparse
 import redis
 import _thread
 import time
@@ -22,46 +23,26 @@ def terminal_input():
         --burp-threads : 目录爆破线程
         -S : 爬虫参数
         -I : SQLMAP参数
+        -B : 目录爆破参数
         --cookie : 手动输入cookie
         --file : 输出文件名
+
     '''
     ter_opt={}
-    url = ''
-    try:
-        opts,args = getopt.getopt(sys.argv[1:],"hu:S:I:",['url=','spider-threads=','cookie=','file=','burp-threads='])
-    except getopt.GetoptError:
-      print("Command Error, type -h for usage")
-      sys.exit(2)
-    if len(sys.argv) == 1:
-        print('AD_Scanner\nType -h for help')
-        sys.exit(0)
-    for opt,arg in opts:#获取参数
-        if opt == '-h':
-            print("Usage:")
-            print("-u/--url= : URL for scanning")
-            print("-h : help")
-            print('--spider-thread= : Threads num of url_spider module')
-            print('-S : spider args')
-            print('-I : sqlmap_args')
-            print('--cooie : input cooikes')
-            print('--file : output file')
-            print('--burp-threads : Threads of burp_force_diectory module')
-            sys.exit(0)
-        elif opt in ('-u','--url'):
-            ter_opt['url'] = arg
-        elif opt in ('--spider-threads'):
-            ter_opt['input_opt_spider_threads'] = int(arg)
-        elif opt in ('-S'):
-            ter_opt['spider_args'] = arg
-        elif opt in ('-I'):
-            ter_opt['sqlmap_args'] = arg
-        elif opt in ('--cookie'):
-            ter_opt['cookie'] = arg
-        elif opt in ('--file'):
-            ter_opt['file'] = arg
-        elif opt in ('--burp-threads'):
-            ter_opt['burp_threads'] = arg
+    parser = argparse.ArgumentParser(description='Short sample app',add_help=True)
+    parser.add_argument('-u','--url',help='目标url')
+    parser.add_argument('--cookie',default=None,help='扫描器cookie')
+    parser.add_argument('-F','--file',default=None,help='输出目标文件')
+    parser.add_argument('-S','--spider_arg',default='craw',help='全站爬虫模块方法')
+    parser.add_argument('--spider_threads',default=10,help='全站爬虫模块线程数',type=int)
+    parser.add_argument('-I','--sqli_arg',default=None,help='SQL注入漏洞扫描模块方法')
+    parser.add_argument('-B','--burp_arg',default='run',help='路径爆破模块方法')
+    parser.add_argument('--burp_threads',default=50,help='路径爆破模块线程数',type=int)
+    args = parser.parse_args()
+    for x,y in args._get_kwargs():
+        ter_opt[x]=y
     return ter_opt
+
 
 class base:
     '''
@@ -115,15 +96,8 @@ class base:
         print('go')
         time.sleep(1)
 
-        '''Url_Spider的线程数'''
-        if 'input_opt_spider_threads' in self.info.keys():
-            self.spider_threads = self.info['input_opt_spider_threads']
-        else:
-            self.spider_threads = 100
-            self.base_redis.hset('base','input_opt_spider_threads', self.spider_threads)
-
         '''处理输出文件'''
-        if 'file' in self.info.keys():
+        if self.info['file'] != None:
             self.file_status = True
 
     def print_data(self):
@@ -132,38 +106,27 @@ class base:
              --------
              数据
         '''
-
+        output_dict={'Url_Spider':'Spider_full_urls','Burp_force_directory':'Burp_force_directory_url'}
         #如果传入了输出文件的参数则打开相应的文件
         if self.file_status :
             self.data_file = self.info['file']
             self.data_file = open(self.data_file,'w')
-        num = 0
 
         print('URL:'+self.url+'\n')
         if self.file_status:
             print('URL:'+self.url+'\n',file=self.data_file)
 
-        #爬虫模块数据输出
-        print('\nBurp_force_directory:\n--------------------------------------')
-        if self.file_status:
-            print('\nBurp_force_directory:\n--------------------------------------',file=self.data_file)
-        for x in ma.base_redis.smembers('Burp_force_directory_url'):
-            print(str(num+1)+':'+x)
+        for x in output_dict.keys():
+            num = 0
+            print('\n\n'+x+':\n--------------------------------------')
             if self.file_status:
-                print(str(num+1)+':'+x,file=self.data_file)
+                print('\n\n'+x+':\n--------------------------------------')
+            for y in ma.base_redis.smembers(output_dict[x]):
+                print(str(num+1)+':'+y)
+                if self.file_status:
+                    print(str(num+1)+':'+y,file=self.data_file)
+                num+=1
 
-            num+=1
-        num = 0
-
-        #目录爆破模块的数据输出
-        print('\n\nURL_Spider:\n---------------------------------')
-        if self.file_status:
-            print('\n\nURL_Spider:\n--------------------------------------',file=self.data_file)
-        for x in ma.base_redis.smembers('Spider_full_urls'):
-            print(str(num+1)+':'+x)
-            if self.file_status:
-                print(str(num+1)+':'+x,file=self.data_file)
-            num+=1
         if self.file_status :
             self.data_file.close()
 
@@ -191,6 +154,7 @@ class base:
     def module_check(self):
         '''查询模块的线程是否执行完成'''
         return [self.spider.is_finished() ,self.burp_force_diectory.is_finished()]
+
 
 #if '__name__' == '__main__':
 ma = base()
