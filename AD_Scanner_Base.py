@@ -33,10 +33,10 @@ def terminal_input():
     parser.add_argument('-u','--url',help='目标url')
     parser.add_argument('--cookie',default=None,help='扫描器cookie')
     parser.add_argument('-F','--file',default=None,help='输出目标文件')
-    parser.add_argument('-S','--spider_args',default='craw',help='全站爬虫模块方法')
+    parser.add_argument('-S','--spider_args',default=None,help='全站爬虫模块方法')
     parser.add_argument('--spider_threads',default=10,help='全站爬虫模块线程数',type=int)
     parser.add_argument('-I','--sqli_args',default=None,help='SQL注入漏洞扫描模块方法')
-    parser.add_argument('-B','--burp_args',default='run',help='路径爆破模块方法')
+    parser.add_argument('-B','--burp_args',default=None,help='路径爆破模块方法')
     parser.add_argument('--burp_threads',default=50,help='路径爆破模块线程数',type=int)
     args = parser.parse_args()
     for x,y in args._get_kwargs():
@@ -93,6 +93,11 @@ class base:
         print('optiopns:\n')
         for x in self.base_redis.hkeys('base'):
             print(x+':'+self.base_redis.hget('base',x))
+        self.output_dict={}
+        if self.info['spider_args'] == 'craw':
+            self.output_dict['Url_Spider'] = 'Spider_full_urls'
+        if self.info['burp_args'] == 'run':
+            self.output_dict['Burp_force_directory'] = 'Burp_force_directory_url'
         print('go')
         time.sleep(1)
 
@@ -106,7 +111,7 @@ class base:
              --------
              数据
         '''
-        output_dict={'Url_Spider':'Spider_full_urls','Burp_force_directory':'Burp_force_directory_url'}
+
         #如果传入了输出文件的参数则打开相应的文件
         if self.file_status :
             self.data_file = self.info['file']
@@ -116,12 +121,12 @@ class base:
         if self.file_status:
             print('URL:'+self.url+'\n',file=self.data_file)
 
-        for x in output_dict.keys():
+        for x in self.output_dict.keys():
             num = 0
             print('\n\n'+x+':\n--------------------------------------')
             if self.file_status:
                 print('\n\n'+x+':\n--------------------------------------',file=self.data_file)
-            for y in ma.base_redis.smembers(output_dict[x]):
+            for y in ma.base_redis.smembers(self.output_dict[x]):
                 print(str(num+1)+':'+y)
                 if self.file_status:
                     print(str(num+1)+':'+y,file=self.data_file)
@@ -153,7 +158,12 @@ class base:
 
     def module_check(self):
         '''查询模块的线程是否执行完成'''
-        return [self.spider.is_finished() ,self.burp_force_diectory.is_finished()]
+        return_list=[]
+        if self.info['spider_args'] == 'craw':
+            return_list.append(self.spider.is_finished())
+        if self.info['burp_args'] == 'run':
+            return_list.append(self.burp_force_diectory.is_finished())
+        return return_list
 
 
 #if '__name__' == '__main__':
@@ -161,7 +171,15 @@ ma = base()
 ma.start_modules()
 while False in ma.module_check() :
     time.sleep(5)
-    print('stat: spider_finished:',ma.spider.is_finished(),' burp_finished:',ma.burp_force_diectory.is_finished(),end='\r',flush=True)
+    print('stat:',end=' ')
+    for x in ma.output_dict.keys():
+        print('  '+x+':',end='')
+        if x == 'Url_Spider':
+            print(ma.spider.is_finished(),end='')
+        elif x == 'Burp_force_directory':
+            print(ma.burp_force_diectory.is_finished(),end='')
+    print('',end='\r',flush=True)
+    #print('stat: spider_finished:',ma.spider.is_finished(),' burp_finished:',ma.burp_force_diectory.is_finished(),end='\r',flush=True)
     continue
 os.system('cls')
 print('finished')
