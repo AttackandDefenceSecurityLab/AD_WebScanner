@@ -44,7 +44,7 @@ class demo(url,save_pool,....):
 - [x] 模块化设计，框架设计 (Chernobyl)
 - [ ] 子域名爆破 (Chernobyl)
 - [ ] 命令执行类(leslie)                                      
-- [x] 数据库漏洞扫描(13yyz)    
+- [ ] 数据库漏洞扫描(13yyz)    
 - [ ] 弱密码        
 - [ ] XSS类        
 - [ ] 敏感个人信息泄露         
