@@ -20,11 +20,12 @@ class demo(url,save_pool,....):
 - 特有参数需指定默认参数，即只传入URL模块亦可单独执行
 - 在构造函数的方法声明内注释说明特有参数的类型
 - 构造器内需要包含模块的执行方法
-
+- 从基础模块的相应键名获取各模块的特殊设置，如`hget('base','spider-threads)#获取爬虫模块的线程设置值`
 ## redis
 - 连接redis实例的名称为模块名_redis，如`spider_redis`
 - 模块中应省略创建存储池的过程，直接连接基础模块所创建的存储池
 - 建议使用redis的hash存储，类型为`'模块名':'键':'值'`，如`hset('base','url',url)`
+- 存储聚合数据类型时（如list/set)，使用redis的list/set存储，键名为模块名-键名，如`redis.sadd('base-input_opt','100)`
 - 如果使用string\list\set存储类型，即视为共用的存储对象，各模块均有读写权限
 - 进行radis的写入/读取操作的方法后注释说明传入/读取值的名称和类型
 

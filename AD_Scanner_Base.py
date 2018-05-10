@@ -21,14 +21,16 @@ def terminal_input():
         -u/--url= : 传入的URL
         -h ：帮助
         --spider-threads : 爬虫线程
+        --burp-threads : 目录爆破线程
         -S : 爬虫参数
         -I : SQLMAP参数
         --cookie : 手动输入cookie
+        --file : 输出文件名
     '''
     ter_opt={}
     url = ''
     try:
-        opts,args = getopt.getopt(sys.argv[1:],"hu:S:I:",['url=','spider-threads=','cookie='])
+        opts,args = getopt.getopt(sys.argv[1:],"hu:S:I:",['url=','spider-threads=','cookie=','file=','burp-threads='])
     except getopt.GetoptError:
       print("Command Error, type -h for usage")
       sys.exit(2)
@@ -44,6 +46,8 @@ def terminal_input():
             print('-S : spider args')
             print('-I : sqlmap_args')
             print('--cooie : input cooikes')
+            print('--file : output file')
+            print('--burp-threads : Threads of burp_force_diectory module')
             sys.exit(0)
         elif opt in ('-u','--url'):
             ter_opt['url'] = arg
@@ -55,6 +59,10 @@ def terminal_input():
             ter_opt['sqlmap_args'] = arg
         elif opt in ('--cookie'):
             ter_opt['cookie'] = arg
+        elif opt in ('--file'):
+            ter_opt['file'] = arg
+        elif opt in ('--burp-threads'):
+            ter_opt['burp_threads'] = arg
     return ter_opt
 
 class base:
@@ -100,18 +108,66 @@ class base:
         '''命令行参数处理
         针对各模块特有设置项，设置相应键值对，用于初始化和存储信息
         '''
-
-        '''url_spider'''
+        #所有参数传入redis
         for x in self.info.keys():
-            print(x)
             self.base_redis.hset('base',x,self.info[x])
+        print('optiopns:\n')
         for x in self.base_redis.hkeys('base'):
             print(x+':'+self.base_redis.hget('base',x),end = '    ')
-        if 'spider_threads' in self.info.keys():
-            self.spider_threads = self.info['spider_threads']
+        print('go')
+        time.sleep(1)
+
+        '''Url_Spider的线程数'''
+        if 'input_opt_spider_threads' in self.info.keys():
+            self.spider_threads = self.info['input_opt_spider_threads']
         else:
             self.spider_threads = 100
             self.base_redis.hset('base','input_opt_spider_threads', self.spider_threads)
+
+        '''处理输出文件'''
+        if 'file' in self.info.keys():
+            self.file_status = True
+
+    def print_data(self):
+        '''格式化输出模块返回的数据
+        格式：模块名
+             --------
+             数据
+        '''
+
+        #如果传入了输出文件的参数则打开相应的文件
+        if self.file_status :
+            self.data_file = self.info['file']
+            self.data_file = open(self.data_file,'w')
+        num = 0
+
+        print('URL:'+self.url+'\n')
+        if self.file_status:
+            print('URL:'+self.url+'\n',file=self.data_file)
+
+        #爬虫模块数据输出
+        print('Burp_force_directory:\n--------------------------------------')
+        if self.file_status:
+            print('URL_Spider:\n--------------------------------------',file=self.data_file)
+        for x in ma.base_redis.smembers('Burp_force_directory_url'):
+            print(str(num+1)+':'+x)
+            if self.file_status:
+                print(str(num+1)+':'+x,file=self.data_file)
+
+            num+=1
+        num = 0
+
+        #目录爆破模块的数据输出
+        print('\n\nURL_Spider:\n---------------------------------')
+        if self.file_status:
+            print('URL_Spider:\n--------------------------------------',file=self.data_file)
+        for x in ma.base_redis.smembers('Spider_full_urls'):
+            print(str(num+1)+':'+x)
+            if self.file_status:
+                print(str(num+1)+':'+x,file=self.data_file)
+            num+=1
+        if self.file_status :
+            self.data_file.close()
 
     def __init__(self):
         self.info = terminal_input()
@@ -124,6 +180,7 @@ class base:
         self.opt_handler()
         '''各模块初始化'''
         print(self.url_type)
+        #对传入的URL进行处理，增加http://前缀
         if self.url_type == '2' or self.url_type == '3':
             self.url = 'http://'+self.url
         print(self.url)
@@ -131,15 +188,16 @@ class base:
         self.burp_force_diectory = Scanner(self.url,self.save_pool)
 
     def start_modules(self):
+        '''多线程执行模块的运行方法'''
         _thread.start_new_thread(self.spider.run,())
         _thread.start_new_thread(self.burp_force_diectory.more_threads,())
 
     def module_check(self):
+        '''查询模块的线程是否执行完成'''
         return [self.spider.is_finished() ,self.burp_force_diectory.is_finished()]
 
 #if '__name__' == '__main__':
 ma = base()
-print('go')
 ma.start_modules()
 while False in ma.module_check() :
     time.sleep(5)
@@ -147,7 +205,5 @@ while False in ma.module_check() :
     continue
 print('finished')
 input()
-os.system("cls")
-print('\nburp:'+str(ma.base_redis.hget('Burp_force_diectory','scanned_url')))
-print('\nspider:'+str(ma.base_redis.hget('Spider_urls', 'full_urls')))
+ma.print_data()
 input()

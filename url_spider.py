@@ -67,7 +67,7 @@ def similarities(data, url, length):
     target_url = turn_num(url, length)
     for i in url_list:
         try:
-            if cos(target_url, i) > 0.999:
+            if cos(target_url, i) > 0.9995:
                 return 1
         except:
             return 0
@@ -79,12 +79,13 @@ class Downloader:   # 发起请求，获取内容
         try:
             r = requests.get(url, timeout=5)
             if r.status_code != 200:
-                print('Something Error')
+                #print('Something Error')
                 return None
             content.append(r.text)
             return content
         except:
-            print("ERROR")
+            pass
+            #print("ERROR")
 
 
 class UrlManager: # 管理url
@@ -107,8 +108,9 @@ class UrlManager: # 管理url
     def has_new_url(self):
         return len(self.new_urls) != 0
 
-    def get_new_url(self):
+    def get_new_url(self, redis_add):
          new_url = self.new_urls.pop()
+         redis_add(new_url)
          self.old_urls.add(new_url)
          return new_url
 
@@ -122,13 +124,12 @@ class SpiderMain:
         self.rootlength = len(self.root)
         self.savepool = savepool
         self.redis_connect()
-        self.finished = 0
+        self.finished = False
 
     def run(self):
         self.redis_get()
         self.function_action(self.action)
-        self.redis_set()
-        self.finished = 1
+        self.finished = True
 
     def is_finished(self):
         return self.finished
@@ -137,8 +138,12 @@ class SpiderMain:
         self.action = self.spider_redis.hget('base', 'spider_args')
         self.threadnum = self.spider_redis.hget('base', 'input_opt_spider_threads')
 
-    def redis_set(self):
-        self.spider_redis.hset('Spider_urls', 'full_urls', self.urls.old_urls)
+    def redis_set(self, url):
+        print('spider add!')
+        try:
+            self.spider_redis.sadd('Spider_full_urls', url)
+        except Exception as e:
+            print(e)
 
     def redis_connect(self):
         #save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
@@ -171,15 +176,13 @@ class SpiderMain:
         self.urls.add_new_url(self.root, self.rootlength)
         iter = 0
         while self.urls.has_new_url():
-            if iter % 3 == 0:
-                self.redis_set()
             content = []
             iter += 1
             th = []
             for _ in list(range(int(self.threadnum))):
                 if self.urls.has_new_url() is False:
                     break
-                new_url = self.urls.get_new_url()
+                new_url = self.urls.get_new_url(self.redis_set)
 
                 # print("craw: " + new_url)
                 t = threading.Thread(target=self.down.get, args=(new_url, content))
