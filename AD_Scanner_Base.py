@@ -1,6 +1,5 @@
 #Author:Chernobyl   2018/5/2
 from url_spider import *
-#from AutoSqli import *
 from Burp_force_directory import *
 import re
 import os
@@ -9,7 +8,6 @@ import getopt
 import redis
 import _thread
 import time
-#from AutoSqli import AutoSqli
 
 def terminal_input():
     '''
