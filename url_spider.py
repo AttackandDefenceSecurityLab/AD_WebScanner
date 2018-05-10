@@ -67,7 +67,7 @@ def similarities(data, url, length):
     target_url = turn_num(url, length)
     for i in url_list:
         try:
-            if cos(target_url, i) > 0.999:
+            if cos(target_url, i) > 0.9995:
                 return 1
         except:
             return 0
@@ -108,8 +108,9 @@ class UrlManager: # 管理url
     def has_new_url(self):
         return len(self.new_urls) != 0
 
-    def get_new_url(self):
+    def get_new_url(self, redis_add):
          new_url = self.new_urls.pop()
+         redis_add(new_url)
          self.old_urls.add(new_url)
          return new_url
 
@@ -128,7 +129,6 @@ class SpiderMain:
     def run(self):
         self.redis_get()
         self.function_action(self.action)
-        self.redis_set()
         self.finished = True
 
     def is_finished(self):
@@ -138,14 +138,12 @@ class SpiderMain:
         self.action = self.spider_redis.hget('base', 'spider_args')
         self.threadnum = self.spider_redis.hget('base', 'input_opt_spider_threads')
 
-    def redis_set(self):
+    def redis_set(self, url):
         print('sepider add!')
         try:
-            for x in self.urls.old_urls:
-                self.spider_redis.sadd('Spider_full_urls',x)
+            self.spider_redis.sadd('Spider_full_urls', url)
         except Exception as e:
             print(e)
-            input()
 
     def redis_connect(self):
         #save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
@@ -178,15 +176,13 @@ class SpiderMain:
         self.urls.add_new_url(self.root, self.rootlength)
         iter = 0
         while self.urls.has_new_url():
-            if iter % 3 == 0:
-                self.redis_set()
             content = []
             iter += 1
             th = []
             for _ in list(range(int(self.threadnum))):
                 if self.urls.has_new_url() is False:
                     break
-                new_url = self.urls.get_new_url()
+                new_url = self.urls.get_new_url(self.redis_set)
 
                 # print("craw: " + new_url)
                 t = threading.Thread(target=self.down.get, args=(new_url, content))
