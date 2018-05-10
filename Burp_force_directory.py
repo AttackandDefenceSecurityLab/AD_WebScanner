@@ -22,13 +22,14 @@ class Scanner():
 
 
     def get_dic(self):
+        '''
+        获取字典目录下的文件名到self.dic_list
+        :return:
+        '''
         for root, files, self.dic_list in os.walk('./Burp_force_directory/dictionary'):
             pass
 
     def more_threads(self):
-        '''
-        为每个字典创建一个线程
-        '''
         self.get_dic()
         threads = []
         self.check = False
