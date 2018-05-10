@@ -139,7 +139,7 @@ class SpiderMain:
         self.threadnum = self.spider_redis.hget('base', 'input_opt_spider_threads')
 
     def redis_set(self, url):
-        print('spider add!')
+        #print('spider add!')
         try:
             self.spider_redis.sadd('Spider_full_urls', url)
         except Exception as e:

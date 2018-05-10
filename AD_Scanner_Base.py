@@ -113,7 +113,7 @@ class base:
             self.base_redis.hset('base',x,self.info[x])
         print('optiopns:\n')
         for x in self.base_redis.hkeys('base'):
-            print(x+':'+self.base_redis.hget('base',x),end = '    ')
+            print(x+':'+self.base_redis.hget('base',x))
         print('go')
         time.sleep(1)
 
@@ -146,9 +146,9 @@ class base:
             print('URL:'+self.url+'\n',file=self.data_file)
 
         #爬虫模块数据输出
-        print('Burp_force_directory:\n--------------------------------------')
+        print('\nBurp_force_directory:\n--------------------------------------')
         if self.file_status:
-            print('URL_Spider:\n--------------------------------------',file=self.data_file)
+            print('\nBurp_force_directory:\n--------------------------------------',file=self.data_file)
         for x in ma.base_redis.smembers('Burp_force_directory_url'):
             print(str(num+1)+':'+x)
             if self.file_status:
@@ -160,7 +160,7 @@ class base:
         #目录爆破模块的数据输出
         print('\n\nURL_Spider:\n---------------------------------')
         if self.file_status:
-            print('URL_Spider:\n--------------------------------------',file=self.data_file)
+            print('\n\nURL_Spider:\n--------------------------------------',file=self.data_file)
         for x in ma.base_redis.smembers('Spider_full_urls'):
             print(str(num+1)+':'+x)
             if self.file_status:
@@ -179,11 +179,9 @@ class base:
         self.url_type = self.base_redis.hget('base','url_type')
         self.opt_handler()
         '''各模块初始化'''
-        print(self.url_type)
         #对传入的URL进行处理，增加http://前缀
         if self.url_type == '2' or self.url_type == '3':
             self.url = 'http://'+self.url
-        print(self.url)
         self.spider = SpiderMain(self.url,self.save_pool)
         self.burp_force_diectory = Scanner(self.url,self.save_pool)
 
@@ -201,7 +199,7 @@ ma = base()
 ma.start_modules()
 while False in ma.module_check() :
     time.sleep(5)
-    print('stat:',ma.spider.is_finished(),ma.burp_force_diectory.is_finished())
+    print('stat: spider_finished:',ma.spider.is_finished(),' burp_finished:',ma.burp_force_diectory.is_finished(),end='\r',flush=True)
     continue
 print('finished')
 input()

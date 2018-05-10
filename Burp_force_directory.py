@@ -33,7 +33,7 @@ class Scanner():
         threads = []
         self.check = False
         for k in range(0,len(self.dic_list)):
-            print(self.dic_list[k])
+            #print(self.dic_list[k])
             #t = threading.Thread(target=self.combine_url,args=(self.dic_list[k],))
             #threads.append(t)
             self.combine_url(self.dic_list[k])
@@ -50,7 +50,7 @@ class Scanner():
         '''
         从字典中逐行取出子目录，并将其与传入的网址组合
         '''
-        print(doc_name)
+        #print(doc_name)
         with open(r'Burp_force_directory\dictionary\\'+doc_name,'r') as file_obj:
             for line in file_obj:
                 test_url = self.url + line
@@ -73,7 +73,7 @@ class Scanner():
             k = self.request(test_url)
             #print(k.status_code)
             if k.status_code == 200:
-<<<<<<< HEAD
+                '''
                 print(test_url)
                 self.get_url.append(test_url)
                 self.len = len(set(self.get_url))
@@ -87,14 +87,12 @@ class Scanner():
                         pass
                         #测试模式下开启报错
                         #print(p)
-
-=======
+                '''
                 try:
-                    print(test_url)
+                    #print(test_url)
                     self.module_redis.sadd('Burp_force_directory_url',test_url)
                 except Exception as e:
                     print(e)
->>>>>>> 1aebc455bfe28de994345e8165bb738b1f964971
         except requests.exceptions.Timeout:
             pass
         except Exception as e:
