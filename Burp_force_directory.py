@@ -42,7 +42,6 @@ class Scanner():
         key = self.burp_redis.hget('base','burp_arg')
         if key == 'run':
             self.more_threads()
-            print("目录爆破启动！！线程：" + self.threads_max + '!!')
 
 
     def get_dic(self):
