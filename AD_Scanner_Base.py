@@ -110,11 +110,12 @@ class base:
         '''
         #所有参数传入redis
         for x in self.info.keys():
-            print(x)
             self.base_redis.hset('base',x,self.info[x])
+        print('optiopns:\n')
         for x in self.base_redis.hkeys('base'):
             print(x+':'+self.base_redis.hget('base',x),end = '    ')
-            input()
+        print('go')
+        time.sleep(1)
 
         '''Url_Spider的线程数'''
         if 'input_opt_spider_threads' in self.info.keys():
@@ -137,26 +138,33 @@ class base:
         #如果传入了输出文件的参数则打开相应的文件
         if self.file_status :
             self.data_file = self.info['file']
-            self.data_file = open(data_file,'w')
+            self.data_file = open(self.data_file,'w')
         num = 0
 
+        print('URL:'+self.url+'\n')
+        if self.file_status:
+            print('URL:'+self.url+'\n',file=self.data_file)
+
         #爬虫模块数据输出
-        print('URL_Spider:\n--------------------------------------')
+        print('Burp_force_directory:\n--------------------------------------')
+        if self.file_status:
+            print('URL_Spider:\n--------------------------------------',file=self.data_file)
         for x in ma.base_redis.smembers('Burp_force_directory_url'):
+            print(str(num+1)+':'+x)
             if self.file_status:
                 print(str(num+1)+':'+x,file=self.data_file)
-            else:
-                print(str(num+1)+':'+x)
+
             num+=1
         num = 0
 
         #目录爆破模块的数据输出
-        print('Burp_force_directory:\n---------------------------------')
+        print('\n\nURL_Spider:\n---------------------------------')
+        if self.file_status:
+            print('URL_Spider:\n--------------------------------------',file=self.data_file)
         for x in ma.base_redis.smembers('Spider_full_urls'):
-            if self.file_satus:
+            print(str(num+1)+':'+x)
+            if self.file_status:
                 print(str(num+1)+':'+x,file=self.data_file)
-            else:
-                print(str(num+1)+':'+x)
             num+=1
         if self.file_status :
             self.data_file.close()
@@ -198,5 +206,4 @@ while False in ma.module_check() :
 print('finished')
 input()
 ma.print_data()
-os.system("cls")
 input()
