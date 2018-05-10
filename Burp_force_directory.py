@@ -80,7 +80,7 @@ class Scanner():
                 if self.len > self.get_url_len:
                     self.get_url_len = self.len
                     try:
-                        self.module_redis.hset('Burp_force_directory','scanned_url',set(self.get_url))
+                        self.module_redis.hset('Burp_force_directory_scanned_url','scanned_url',set(self.get_url))
                         print(self.module_redis.hget('Burp_force_directory','scanned_url'))
                     except Exception as p:
                         pass
