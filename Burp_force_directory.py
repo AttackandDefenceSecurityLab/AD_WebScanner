@@ -32,7 +32,7 @@ class Scanner():
         '''
         从redis中取线程数，如果返回为None，则默认50
         '''
-        return self.burp_redis.hget('base','burp_threads')
+        return int(self.burp_redis.hget('base','burp_threads'))
 
     def run(self):
         '''
@@ -48,6 +48,7 @@ class Scanner():
     def get_dic(self):
         '''
         获取字典目录下的文件名到self.dic_list
+        增加把相对路径换成绝对路径的功能
         :return:
         '''
         for root, files, self.dic_list in os.walk('./Burp_force_directory/dictionary'):
