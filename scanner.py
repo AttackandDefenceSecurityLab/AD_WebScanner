@@ -1,16 +1,17 @@
+#Author: 13yyz
 #coding:'utf-8'
 
 import time
 import signal
 import multiprocessing
 import redis
-from urllib.parse import urlparse
 
 from Sqliscan import std
 from Sqliscan import sqlerrors
 from Sqliscan import web
 from url_spider import *
 from Sqliscan import serverinfo
+
 def init():
     """
     初始化进程信号处理
@@ -88,6 +89,7 @@ def redis_connect(savepool):
 def is_vulnerable(urls):
     if not urls:
         std.stdout("no vulnerables webistes")
+        return True,None
     else:
         std.stdout("scanning server information")
         vulnerableurls = [result[0] for result in urls]
@@ -95,19 +97,39 @@ def is_vulnerable(urls):
         for result, info in zip(urls, table_data):
             info.insert(1, result[1])  # database name
         std.fullprint(table_data)
+        return True,table_data
+
 
 class SqliMain(object):
 
     def __init__(self,savepool):
         self.savepool = savepool
         self.sqli_redis = redis_connect(self.savepool)
+        self.finished = False
+        action = self.sqli_redis.get('sqlmap_args')
+        # if action == 'run':
+        self.run()
+
         action = self.sqli_redis.get('sqlmap_args')
         if action == 'run':
             self.run()
+
     def run(self):
         urlset = self.sqli_redis.smembers("Spider_full_urls")
         vulnerables = scan(urlset)
-        is_vulnerable(vulnerables)
+        result = is_vulnerable(vulnerables)
+        self.finished = result[0]
+        self.redis_set(result[1])
+
+    def redis_set(self, url):
+        #store vulnerableurls
+        try:
+            self.sqli_redis.sadd('Vulnerable_urls', url)
+        except Exception as e:
+            print(e)
+
+    def is_finished(self):
+        return self.finished
 
 
 
@@ -116,7 +138,7 @@ if __name__ == '__main__':
     #         'http://testphp.vulnweb.com:80/artists.php?artist=3',
     #         'http://testphp.vulnweb.com:80/comment.php?aid=3']
     save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
-    url = 'http://leslie2018.com'
+    url = 'http://testphp.vulnweb.com'
     spider = SpiderMain(url, save_pool)
     print("开始启动")
     spider.run()
