@@ -77,7 +77,7 @@ def similarities(data, url, length):
 class Downloader:   # 发起请求，获取内容
     def get(self, url, content):
         try:
-            r = requests.get(url, timeout=5)
+            r = requests.get(url, timeout=100)
             if r.status_code != 200:
                 return None
             content.append(r.text)
