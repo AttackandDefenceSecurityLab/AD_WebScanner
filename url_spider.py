@@ -79,16 +79,14 @@ class Downloader:   # 发起请求，获取内容
         try:
             r = requests.get(url, timeout=5)
             if r.status_code != 200:
-                #print('Something Error')
                 return None
             content.append(r.text)
             return content
         except:
             pass
-            #print("ERROR")
 
 
-class UrlManager: # 管理url
+class UrlManager: 
     def __init__(self):
         self.new_urls = set()
         self.old_urls = set()
@@ -174,10 +172,8 @@ class SpiderMain:
 
     def craw(self):    # 控制流程，利用多线程发起请求
         self.urls.add_new_url(self.root, self.rootlength)
-        iter = 0
         while self.urls.has_new_url():
             content = []
-            iter += 1
             th = []
             for _ in list(range(int(self.threadnum))):
                 if self.urls.has_new_url() is False:
@@ -190,9 +186,9 @@ class SpiderMain:
                 th.append(t)
             for t in th:
                 t.join()
+                
             for _str in content:
                 if _str is None:
-                    #print("Nothing here")
                     continue
 
                 new_urls = self.parse(new_url, _str)
