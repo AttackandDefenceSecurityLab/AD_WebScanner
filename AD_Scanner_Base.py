@@ -141,6 +141,7 @@ class base:
     def __init__(self):
         self.info = terminal_input()
         self.url = self.info['url']
+        self.file_status = False
         self.save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)#开启本地radis
         self.base_redis = redis.Redis(connection_pool=self.save_pool)
         self.base_redis.flushdb()
