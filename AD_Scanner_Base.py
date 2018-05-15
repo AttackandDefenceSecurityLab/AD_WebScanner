@@ -1,6 +1,7 @@
 #Author:Chernobyl   2018/5/2
 from url_spider import *
 from Burp_force_directory import *
+from scanner import *
 import re
 import os
 import sys
@@ -9,6 +10,7 @@ import argparse
 import redis
 import _thread
 import time
+import json
 
 def terminal_input():
     '''
@@ -101,6 +103,8 @@ class base:
             self.output_dict['Url_Spider'] = 'Spider_full_urls'
         if self.info['burp_args'] == 'run':
             self.output_dict['Burp_force_directory'] = 'Burp_force_directory_url'
+        if self.info['sqli_args'] == 'run':
+            self.output_dict['Sqli_scanner'] = 'Vulnerable_urls'
         print('go')
         time.sleep(1)
 
@@ -130,10 +134,16 @@ class base:
             if self.file_status:
                 print('\n\n'+x+':\n--------------------------------------',file=self.data_file)
             for y in ma.base_redis.smembers(self.output_dict[x]):
-                print(str(num+1)+':'+y)
-                if self.file_status:
-                    print(str(num+1)+':'+y,file=self.data_file)
-                num+=1
+                if x != 'Sqli_scanner' :
+                    print(str(num+1)+':'+y)
+                    if self.file_status:
+                        print(str(num+1)+':'+y,file=self.data_file)
+                    num+=1
+                else:
+                    tmp = json.loads(y)
+                    print('url:'+str(tmp['url'])+'  database:'+str(tmp['db'])+'  server:'+str(tmp['server']))
+                    if self.file_status:
+                        print('url:'+str(tmp['url'])+'  database:'+str(tmp['db'])+'  server:'+str(tmp['server']),file=self.data_file)
 
         if self.file_status :
             self.data_file.close()
@@ -154,11 +164,13 @@ class base:
             self.url = 'http://'+self.url
         self.spider = SpiderMain(self.url,self.save_pool)
         self.burp_force_diectory = Scanner(self.url,self.save_pool)
+        self.sqli = SqliMain(self.save_pool)
 
     def start_modules(self):
         '''多线程执行模块的运行方法'''
         _thread.start_new_thread(self.spider.run,())
         _thread.start_new_thread(self.burp_force_diectory.more_threads,())
+        _thread.start_new_thread(self.sqli.run,())
 
     def module_check(self):
         '''查询模块的线程是否执行完成'''
@@ -167,6 +179,8 @@ class base:
             return_list.append(self.spider.is_finished())
         if self.info['burp_args'] == 'run':
             return_list.append(self.burp_force_diectory.is_finished())
+        if self.info['sqli_args'] == 'run':
+            return_list.append(self.sqli.is_finished())
         return return_list
 
 
@@ -182,6 +196,8 @@ while False in ma.module_check() :
             print(ma.spider.is_finished(),end='')
         elif x == 'Burp_force_directory':
             print(ma.burp_force_diectory.is_finished(),end='')
+        elif x == 'Sqli_scanner':
+            print(ma.sqli.is_finished(),end='')
     print(' ',end='\r')
     time.sleep(5)
     timer+=5
