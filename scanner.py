@@ -108,8 +108,8 @@ class SqliMain(object):
         self.sqli_redis = redis_connect(self.savepool)
         self.finished = False
         action = self.sqli_redis.get('sqli_args')
-        # if action == 'run':
-        self.run()
+        if action == 'run':
+            self.run()
 
     def run(self):
         urlset = self.sqli_redis.smembers("Spider_full_urls")
