@@ -1,5 +1,6 @@
 #coding = 'utf-8'
 import time
+import json
 from termcolor import colored
 from terminaltables import SingleTable
 
@@ -82,6 +83,30 @@ def fullprint(data):
 
     table = SingleTable(table_data, title)
     print(table.table)
+
+
+def dumpjson(array):
+    """
+    以json格式存储
+    :param array:
+    :return:
+    """
+    jsondata = {}
+
+    for index, result in enumerate(array):
+        jsondata[index] = {
+            'url': result[0].encode('utf-8'),
+            'db': result[1].encode('utf-8'),
+            'server': result[2].encode('utf-8')
+        }
+    jsonresult = json.dumps(jsondata,cls=MyEncoder)
+    return jsonresult
+
+class MyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, bytes):
+            return str(obj, encoding='utf-8');
+        return json.JSONEncoder.default(self, obj)
 
 if __name__ == '__main__':
     stderr('error')

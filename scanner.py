@@ -94,10 +94,11 @@ def is_vulnerable(urls):
         std.stdout("scanning server information")
         vulnerableurls = [result[0] for result in urls]
         table_data = serverinfo.check(vulnerableurls)
+        json_obj = std.dumpjson(table_data)
         for result, info in zip(urls, table_data):
-            info.insert(1, result[1])  # database name
+            info.insert(1, result[1])
         std.fullprint(table_data)
-        return True,table_data
+        return True,json_obj
 
 
 class SqliMain(object):
@@ -120,8 +121,8 @@ class SqliMain(object):
     def redis_set(self, url):
         #store vulnerableurls
         try:
-            self.sqli_redis.sadd('Vulnerable_urls', url)
-            print(self.sqli_redis.smembers("Vulnerable_urls"))
+            self.sqli_redis.set('Vulnerable_urls', url)
+            # print(self.sqli_redis.get("Vulnerable_urls"))
         except Exception as e:
             print(e)
 

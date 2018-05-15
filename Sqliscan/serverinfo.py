@@ -13,8 +13,7 @@ def init():
 
 def check(urls):
     """
-    
-    
+
     """
 
     domains_info = []  # 
@@ -50,7 +49,7 @@ def check(urls):
             domains_info.append([url, data[0], data[1]])
             continue
 
-        domains_info.append([url, '', ''])
+        domains_info.append([url, '', '',])
 
     return domains_info
 
