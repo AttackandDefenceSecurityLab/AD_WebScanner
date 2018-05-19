@@ -29,7 +29,7 @@ def scan(urls):
     results = {} #存储扫描结果
 
     childs = []  #存储子线程
-    max_processes = multiprocessing.cpu_count() * 2
+    max_processes = 8
     pool = multiprocessing.Pool(max_processes, init)
 
     for url in urls:
