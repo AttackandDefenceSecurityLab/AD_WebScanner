@@ -43,7 +43,7 @@ def scan(urls):
             if all([child.ready() for child in childs]):
                 break
     except Exception:
-        std.stderr("stopping sqli scanning process")
+        # std.stderr("stopping sqli scanning process")
         pool.terminate()
         pool.join()
     else:
@@ -61,7 +61,7 @@ def __sqli(url):
        :param url: url
        :return:
     """
-    std.stdout("scanning {}".format(url),end="\n")
+    # std.stdout("scanning {}".format(url),end="\n")
     domain = url.split("?")[0] #取域名
     queries = urlparse(url).query.split("&") #解析参数
 
@@ -88,10 +88,10 @@ def redis_connect(savepool):
 
 def is_vulnerable(urls):
     if not urls:
-        std.stdout("no vulnerables webistes")
+        # std.stdout("no vulnerables webistes")
         return True,None
     else:
-        std.stdout("scanning server information")
+        # std.stdout("scanning server information")
         vulnerableurls = [result[0] for result in urls]
         table_data = serverinfo.check(vulnerableurls)
         json_obj = std.dumpjson(table_data)

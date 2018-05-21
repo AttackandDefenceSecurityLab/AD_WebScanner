@@ -27,8 +27,8 @@ def gethtml(url, lastURL=False):
     except urllib.URLError as e:
         pass
 
-    except KeyboardInterrupt:
-        raise  KeyboardInterrupt
+    except Exception as e0:
+        raise  e0
 
     except:
         pass

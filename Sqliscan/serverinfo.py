@@ -33,8 +33,7 @@ def check(urls):
             time.sleep(0.5)
             if all([child.ready() for child in childs]):
                 break
-    except KeyboardInterrupt:
-        std.stderr("skipping server info scanning process")
+    except Exception:
         pool.terminate()
         pool.join()
     else:
@@ -63,8 +62,8 @@ def __getserverinfo(url):
 
     try:
         result = web.gethtml(url)
-    except KeyboardInterrupt:
-        raise KeyboardInterrupt
+    except Exception:
+        raise
 
     try:
         soup = bs4.BeautifulSoup(result, "lxml")
