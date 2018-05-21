@@ -42,7 +42,7 @@ def scan(urls):
             time.sleep(0.5)
             if all([child.ready() for child in childs]):
                 break
-    except KeyboardInterrupt:
+    except Exception:
         std.stderr("stopping sqli scanning process")
         pool.terminate()
         pool.join()
