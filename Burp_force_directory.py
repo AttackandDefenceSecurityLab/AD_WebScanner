@@ -76,7 +76,7 @@ class Scanner():
         从字典中逐行取出子目录，并将其与传入的网址组合
         '''
         print(doc_name)
-        with open(os.getcwd() + r'Burp_force_directory\dictionary\\'+doc_name,'r') as file_obj:
+        with open(os.getcwd() + r'\Burp_force_directory\dictionary\\'+doc_name,'r') as file_obj:
             for line in file_obj:
                 test_url = self.url + line
                 # print(test_url)
