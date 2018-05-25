@@ -44,7 +44,7 @@ class demo(url,save_pool,....):
 - [x] 爬虫 (leslie)  
 - [x] 目录爆破 (Mr. Guo)
 - [x] 模块化设计，框架设计 (Chernobyl)
-- [ ] 子域名爆破 (Chernobyl)
+- [x] 子域名爆破 (leslie)
 - [ ] 命令执行类(leslie)                                      
 - [x] 数据库漏洞扫描(threeworld)    
 - [ ] 弱密码        
