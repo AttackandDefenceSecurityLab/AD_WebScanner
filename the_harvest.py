@@ -14,10 +14,10 @@ class TheHarvester():
         
         
     def is_finished(self):
-        return self.finishedion
+        return self.finished
     
     def redis_connect(self):
-        self.harvest_redis = redis.Redis(connect_pool=self.savepool)
+        self.harvest_redis = redis.Redis(connection_pool=self.savepool)
              
         
     def start_search(self):
