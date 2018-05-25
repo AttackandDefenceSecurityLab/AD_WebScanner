@@ -14,9 +14,9 @@ class TheHarvester():
         
         
     def is_finished(self):
-        return self.finished
+        return self.finishedion
     
-    def redis_connnect(self):
+    def redis_connect(self):
         self.harvest_redis = redis.Redis(connect_pool=self.savepool)
              
         
