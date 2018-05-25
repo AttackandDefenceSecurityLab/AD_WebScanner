@@ -4,7 +4,7 @@ import redis
 
 
 class TheHarvester():
-    def __init__(self, word,limit=200, engine='baidu', savepool):
+    def __init__(self, word, savepool, limit=200, engine='baidu'):
         self.word = word
         self.limit = limit
         self.engine = engine
@@ -40,6 +40,8 @@ class TheHarvester():
 
 
 if __name__ == '__main__':
-    Harvester = TheHarvester('baidu.com')
+    save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
+    Harvester = TheHarvester('baidu.com',savepool=save_pool)
+
     Harvester.start_search()
 
