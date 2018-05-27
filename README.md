@@ -47,7 +47,7 @@ class demo(url,save_pool,....):
 - [x] 子域名爆破 (leslie)
 - [ ] 命令执行类(leslie)                                      
 - [x] 数据库漏洞扫描(threeworld)    
-- [ ] 弱密码        
+- [x] 弱密码爆破(leslie)        
 - [ ] XSS类        
 - [ ] 敏感个人信息泄露         
 - [ ] 内网渗透   
