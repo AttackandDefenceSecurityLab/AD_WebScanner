@@ -27,8 +27,10 @@ class TheHarvester():
         self.all_emails = search.get_emails()
         self.all_hosts = search.get_hostnames()
         self.host_check()
-        self.harvest_redis.sadd('Harvest_subdomain', self.all_hosts)
-        self.harvest_redis.sadd('Harvest_emails', self.all_emails)
+        for i in self.all_hosts:
+            self.harvest_redis.sadd('Harvest_subdomain', i)
+        for i in self.all_emails:
+            self.harvest_redis.sadd('Harvest_emails', i)
         self.finished = True
         
         
