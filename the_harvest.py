@@ -1,11 +1,12 @@
 from tHar_lib.engine_search import Search
 from tHar_lib import hostchecker
 import redis
-
+import tldextract
 
 class TheHarvester():
-    def __init__(self, word, savepool, limit=200, engine='baidu'):
-        self.word = word
+    def __init__(self, url, savepool, limit=200, engine='baidu'):
+        val = tldextract.extract(url)
+        self.word = "{0}.{1}".format(val.domain, val.suffix)
         self.limit = limit
         self.engine = engine
         self.savepool = savepool
