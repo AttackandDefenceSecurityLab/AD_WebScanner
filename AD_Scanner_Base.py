@@ -1,7 +1,8 @@
-#Author:Chernobyl   2018/5/2
+#Author:Chernobyl   2018/5/28
 from url_spider import *
 from Burp_force_directory import *
 from scanner import *
+from the_harvest import *
 import re
 import os
 import sys
@@ -11,6 +12,7 @@ import redis
 import _thread
 import time
 import json
+
 
 def terminal_input():
     '''
@@ -105,6 +107,7 @@ class base:
             self.output_dict['Burp_force_directory'] = 'Burp_force_directory_url'
         if self.info['sqli_args'] == 'run':
             self.output_dict['Sqli_scanner'] = 'Vulnerable_urls'
+        self.output_dict['the_harvest'] = ['Harvest_subdomain','Harvest_emails']
         print('go')
         time.sleep(1)
 
@@ -133,12 +136,20 @@ class base:
             print('\n\n'+x+':\n--------------------------------------')
             if self.file_status:
                 print('\n\n'+x+':\n--------------------------------------',file=self.data_file)
-            for y in ma.base_redis.smembers(self.output_dict[x]):
+            if x == 'the_harvest':
+                for x,y in zip(self.base_redis.smembers(self.output_dict[x][0]),self.base_redis.smembers(self.output_dict[x][1])):
+                    print(str(num+1)+':  domain:'+str(x)+'    mail:'+str(y))
+                    if self.file_status:
+                        print(str(num+1)+':  domain:'+str(x)+'    mail:'+str(y),file=self.data_file)
+                continue
+
+            for y in self.base_redis.smembers(self.output_dict[x]):
                 if x != 'Sqli_scanner' :
                     print(str(num+1)+':'+y)
                     if self.file_status:
                         print(str(num+1)+':'+y,file=self.data_file)
                     num+=1
+
                 else:
                     tmp = json.loads(y)
                     print('url:'+str(tmp['url'])+'  database:'+str(tmp['db'])+'  server:'+str(tmp['server']))
@@ -165,12 +176,14 @@ class base:
         self.spider = SpiderMain(self.url,self.save_pool)
         self.burp_force_diectory = Scanner(self.url,self.save_pool)
         self.sqli = SqliMain(self.save_pool)
+        self.harvest = TheHarvester(self.url,self.save_pool)
 
     def start_modules(self):
         '''多线程执行模块的运行方法'''
         _thread.start_new_thread(self.spider.run,())
         _thread.start_new_thread(self.burp_force_diectory.more_threads,())
-        _thread.start_new_thread(self.sqli.run,())
+        #_thread.start_new_thread(self.sqli.run,())
+        _thread.start_new_thread(self.harvest.start_search,())
 
     def module_check(self):
         '''查询模块的线程是否执行完成'''
@@ -181,6 +194,7 @@ class base:
             return_list.append(self.burp_force_diectory.is_finished())
         if self.info['sqli_args'] == 'run':
             return_list.append(self.sqli.is_finished())
+        return_list.append(self.harvest.is_finished())
         return return_list
 
 
@@ -198,6 +212,8 @@ while False in ma.module_check() :
             print(ma.burp_force_diectory.is_finished(),end='')
         elif x == 'Sqli_scanner':
             print(ma.sqli.is_finished(),end='')
+        elif x == 'the_harvest':
+            print(ma.harvest.is_finished(),end='')
     print(' ',end='\r')
     time.sleep(5)
     timer+=5

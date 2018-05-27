@@ -12,15 +12,15 @@ class TheHarvester():
         self.savepool = savepool
         self.finished = False
         self.redis_connect()
-        
-        
+
+
     def is_finished(self):
         return self.finished
-    
+
     def redis_connect(self):
         self.harvest_redis = redis.Redis(connection_pool=self.savepool)
-             
-        
+
+
     def start_search(self):
         search = Search(self.word, self.limit, self.engine)
         search.process()
@@ -32,9 +32,9 @@ class TheHarvester():
         for i in self.all_emails:
             self.harvest_redis.sadd('Harvest_emails', i)
         self.finished = True
-        
-        
-        // print(self.all_hosts, self.all_emails)
+
+
+        # print(self.all_hosts, self.all_emails)
 
     def host_check(self):
         self.total_length = len(self.all_hosts)
@@ -47,4 +47,3 @@ if __name__ == '__main__':
     Harvester = TheHarvester('baidu.com',savepool=save_pool)
 
     Harvester.start_search()
-
