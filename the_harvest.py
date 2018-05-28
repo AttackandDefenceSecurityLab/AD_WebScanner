@@ -40,6 +40,11 @@ class TheHarvester():
         self.total_length = len(self.all_hosts)
         self.all_hosts = sorted(set(self.all_hosts))
         self.hosts = hostchecker.Checker(self.all_hosts).check()
+        
+    def run(self):
+        self.action = self.harvest_redis.hget('base','harvest_args')
+        if self.action == 'search':
+            self.start_search()
 
 
 if __name__ == '__main__':
