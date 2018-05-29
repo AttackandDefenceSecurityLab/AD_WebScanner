@@ -75,7 +75,7 @@ class BurpUser:
         
     def run(self):
         self.action = self.burp_user_redis.get('base', 'burp_user_args')
-        if self.url = '':
+        if self.url == '':
             self.url = self.burp_user_redis.get('base', 'login_url')
         if self.action == 'burp':
             self.burp()
