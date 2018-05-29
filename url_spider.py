@@ -126,7 +126,8 @@ class SpiderMain:
 
     def run(self):
         self.redis_get()
-        self.function_action(self.action)
+        if self.action == 'craw':
+            self.craw()
         self.finished = True
 
     def is_finished(self):
@@ -210,9 +211,6 @@ class SpiderMain:
             #print('target url error')
             return 0
 
-    def function_action(self, action):
-        if action == 'craw':
-            self.craw()
 
 
 if __name__ == '__main__':
