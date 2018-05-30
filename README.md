@@ -42,18 +42,18 @@ class demo(url,save_pool,....):
 # 主要功能
 
 - [x] 爬虫 (leslie)  
-- [x] 目录爆破 (Mr. Guo)
+- [x] 目录爆破 (xuxu)
 - [x] 模块化设计，框架设计 (Chernobyl)
 - [x] 子域名爆破 (leslie)
 - [ ] 命令执行类(leslie)                                      
 - [x] 数据库漏洞扫描(threeworld)    
 - [x] 弱密码爆破(leslie)        
-- [ ] XSS类        
+- [ ] XSS类
 - [ ] 敏感个人信息泄露         
 - [ ] 内网渗透   
 - [ ] 中间件扫描或者指纹扫描
 - [ ] 无线网络扫描
-- [ ] 端口扫描(Mr. Wu)
+- [ ] 端口扫描(xuxu)
 - [ ] 图形化界面
 - to be continued
 
