@@ -16,7 +16,7 @@ import sys
 
 class BruteXSS(object):
 
-    def __init__(self, url,savepool):
+    def __init__(self, savepool):
         self.url = url
         self.redis_out = '' #输出给共享池的''
         self.isfinish = False #是否跑完
@@ -117,7 +117,7 @@ class BruteXSS(object):
 if __name__ == '__main__':
     url = 'http://localhost/crack_demo.php?value=aaaa&pwd=#'
     savepool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
-    brute = BruteXSS(url,savepool)
+    brute = BruteXSS(savepool)
     print(brute.is_finished())
     brute.run()
     print(brute.is_finished())
