@@ -3,6 +3,7 @@
 #!BruteXSS
 #!author: Dlangman
 '''
+v0.1easy
 GET方法对url进行解析，将url分解出value。然后对value进行XSS，
     检测机制是检查response中是否有插入信息，所以payload很重要，不能乱改payload文件。
 '''
@@ -17,7 +18,6 @@ import sys
 class BruteXSS(object):
 
     def __init__(self, savepool):
-        self.url = url
         self.redis_out = '' #输出给共享池的''
         self.isfinish = False #是否跑完
         self.save_pool = savepool # 开启本地radis
