@@ -3,6 +3,7 @@ from url_spider import *
 from Burp_force_directory import *
 from scanner import *
 from the_harvest import *
+from burp_user import *
 import re
 import os
 import sys
@@ -37,6 +38,7 @@ def terminal_input():
         sys.argv.append('-h')
     parser = argparse.ArgumentParser(description='AnD Web Scanner',add_help=True)
     parser.add_argument('-u','--url',help='目标url')
+    parser.add_argument('--login_url',default=None,help='账户爆破URL')
     parser.add_argument('--cookie',default=None,help='扫描器cookie')
     parser.add_argument('-F','--file',default=None,help='输出目标文件')
     parser.add_argument('-S','--spider_args',default=None,help='全站爬虫模块方法')
@@ -44,6 +46,10 @@ def terminal_input():
     parser.add_argument('-I','--sqli_args',default=None,help='SQL注入漏洞扫描模块方法')
     parser.add_argument('-B','--burp_args',default=None,help='路径爆破模块方法')
     parser.add_argument('--burp_threads',default=10,help='路径爆破模块线程数',type=int)
+    parser.add_argument('-R','--harvest_args',default=None,help='子域名收集模块参数')
+    parser.add_argument('-U','--burp_user_args',default=None,help='用户爆破模块参数')
+
+    parser.add_argument
     parser.add_argument('--debug',default=None,help='开启Debug模式')
     args = parser.parse_args()
     for x,y in args._get_kwargs():
@@ -107,7 +113,11 @@ class base:
             self.output_dict['Burp_force_directory'] = 'Burp_force_directory_url'
         if self.info['sqli_args'] == 'run':
             self.output_dict['Sqli_scanner'] = 'Vulnerable_urls'
-        self.output_dict['the_harvest'] = ['Harvest_subdomain','Harvest_emails']
+        if self.info['harvest_args'] == 'search':
+            self.output_dict['the_harvest'] = ['Harvest_subdomain','Harvest_emails']
+        if self.info['burp_user_args'] == 'burp' and self.info['login_url'] != None:
+            self.output_dict['burp_user'] = True
+
         print('go')
         time.sleep(1)
 
@@ -143,6 +153,12 @@ class base:
                         print(str(num+1)+':  domain:'+str(x)+'    mail:'+str(y),file=self.data_file)
                 continue
 
+            if x == 'burp_user':
+                print('account: '+self.base_redis.hget('burp_user', 'user')+  'password: '+self.base_redis.hget('burp_user', 'password'))
+                if self.file_status:
+                    print('account: '+self.base_redis.hget('burp_user', 'user')+  'password: '+self.base_redis.hget('burp_user', 'password'),file=self.data_file)
+                continue
+
             for y in self.base_redis.smembers(self.output_dict[x]):
                 if x != 'Sqli_scanner' :
                     print(str(num+1)+':'+y)
@@ -162,6 +178,7 @@ class base:
     def __init__(self):
         self.info = terminal_input()
         self.url = self.info['url']
+        self.lg_url = self.info['login_url']
         self.file_status = False
         self.save_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)#开启本地radis
         self.base_redis = redis.Redis(connection_pool=self.save_pool)
@@ -177,6 +194,8 @@ class base:
         self.burp_force_diectory = Scanner(self.url,self.save_pool)
         self.sqli = SqliMain(self.save_pool)
         self.harvest = TheHarvester(self.url,self.save_pool)
+        if self.output_dict['burp_user']:
+            self.burp_user = BurpUser(self.lg_url,self.save_pool)
 
     def start_modules(self):
         '''多线程执行模块的运行方法'''
@@ -194,7 +213,10 @@ class base:
             return_list.append(self.burp_force_diectory.is_finished())
         if self.info['sqli_args'] == 'run':
             return_list.append(self.sqli.is_finished())
-        return_list.append(self.harvest.is_finished())
+        if self.info['harvest_args'] == 'search':
+            return_list.append(self.harvest.is_finished())
+        if self.info['burp_user_args'] == 'burp':
+            return_list.append(self.burp_user.is_finished())
         return return_list
 
 
@@ -214,6 +236,8 @@ while False in ma.module_check() :
             print(ma.sqli.is_finished(),end='')
         elif x == 'the_harvest':
             print(ma.harvest.is_finished(),end='')
+        elif x == 'burp_user':
+            print(ma.burp_user.is_finished(),end='')
     print(' ',end='\r')
     time.sleep(5)
     timer+=5
