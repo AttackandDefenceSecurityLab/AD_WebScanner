@@ -75,7 +75,7 @@ class Scanner():
         '''
         从字典中逐行取出子目录，并将其与传入的网址组合
         '''
-        print(doc_name)
+        #print(doc_name)
         with open(os.getcwd() + r'\Burp_force_directory\dictionary\\'+doc_name,'r') as file_obj:
             for line in file_obj:
                 test_url = self.url + line
@@ -110,6 +110,7 @@ class Scanner():
                     pass
                 else:
                     self.get_url.append(test_url)
+                    '''
                     try:
                         self.burp_redis.hset('Burp_force_directory_scanned_url','scanned_url',self.get_url)
                         print(self.burp_redis.hget('Burp_force_directory','scanned_url'))
@@ -117,6 +118,7 @@ class Scanner():
                         pass
                         #测试模式下开启报错
                         #print(p)
+                    '''
 
 
                 try:
