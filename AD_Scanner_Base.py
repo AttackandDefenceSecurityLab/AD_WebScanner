@@ -194,15 +194,16 @@ class base:
         self.burp_force_diectory = Scanner(self.url,self.save_pool)
         self.sqli = SqliMain(self.save_pool)
         self.harvest = TheHarvester(self.url,self.save_pool)
-        if self.output_dict['burp_user']:
-            self.burp_user = BurpUser(self.lg_url,self.save_pool)
+        #self.burp_user = BurpUser(self.lg_url,self.save_pool)
 
     def start_modules(self):
         '''多线程执行模块的运行方法'''
         _thread.start_new_thread(self.spider.run,())
         _thread.start_new_thread(self.burp_force_diectory.more_threads,())
-        #_thread.start_new_thread(self.sqli.run,())
+        _thread.start_new_thread(self.sqli.run,())
         _thread.start_new_thread(self.harvest.start_search,())
+        #_thread.start_new_thread(self.burp_user.run,())
+
 
     def module_check(self):
         '''查询模块的线程是否执行完成'''
