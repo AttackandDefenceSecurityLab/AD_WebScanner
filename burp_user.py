@@ -72,12 +72,12 @@ class BurpUser:
         self.burp_user_redis = redis.Redis(connection_pool=self.savepool)
         
     def run(self):
-        self.action = self.burp_user_redis.hget('base', 'burp_user_args')
-        if self.url:
-            self.url = self.burp_user_redis.hget('base', 'login_url')
-        self.default_length = len(requests.post(self.url, headers=headers,
-                                            data={self.user_param: '', self.pass_param: ''}).content)    
+        self.action = self.burp_user_redis.hget('base', 'burp_user_args')    
         if self.action == 'burp':
+            if self.url:
+                self.url = self.burp_user_redis.hget('base', 'login_url')
+            self.default_length = len(requests.post(self.url, headers=headers,
+                                            data={self.user_param: '', self.pass_param: ''}).content)
             self.burp()
             
 
