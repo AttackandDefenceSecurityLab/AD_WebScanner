@@ -4,6 +4,7 @@ from Burp_force_directory import *
 from scanner import *
 from the_harvest import *
 from burp_user import *
+from BruteXSS import *
 import re
 import os
 import sys
@@ -41,13 +42,14 @@ def terminal_input():
     parser.add_argument('--login_url',default=None,help='账户爆破URL')
     parser.add_argument('--cookie',default=None,help='扫描器cookie')
     parser.add_argument('-F','--file',default=None,help='输出目标文件')
-    parser.add_argument('-S','--spider_args',default=None,help='全站爬虫模块方法')
+    parser.add_argument('-S','--spider_args',default=None,help='全站爬虫模块方法(craw)')
     parser.add_argument('--spider_threads',default=10,help='全站爬虫模块线程数',type=int)
-    parser.add_argument('-I','--sqli_args',default=None,help='SQL注入漏洞扫描模块方法')
-    parser.add_argument('-B','--burp_args',default=None,help='路径爆破模块方法')
+    parser.add_argument('-I','--sqli_args',default=None,help='SQL注入漏洞扫描模块方法(run)')
+    parser.add_argument('-B','--burp_args',default=None,help='路径爆破模块方法(run)')
     parser.add_argument('--burp_threads',default=10,help='路径爆破模块线程数',type=int)
-    parser.add_argument('-R','--harvest_args',default=None,help='子域名收集模块参数')
-    parser.add_argument('-U','--burp_user_args',default=None,help='用户爆破模块参数')
+    parser.add_argument('-R','--harvest_args',default=None,help='子域名收集模块参数(search)')
+    parser.add_argument('-U','--burp_user_args',default=None,help='用户爆破模块参数(burp)')
+    parser.add_argument('-X','--burp_XSS_args',default=None,help='XSS模块参数(run)')
 
     parser.add_argument
     parser.add_argument('--debug',default=None,help='开启Debug模式')
@@ -117,6 +119,8 @@ class base:
             self.output_dict['the_harvest'] = ['Harvest_subdomain','Harvest_emails']
         if self.info['burp_user_args'] == 'burp' and self.info['login_url'] != None:
             self.output_dict['burp_user'] = True
+        if self.info['burp_XSS_args'] == 'run':
+            self.output_dict['XSS'] = 'XSS_hole'
 
         print('go')
         time.sleep(1)
@@ -194,7 +198,8 @@ class base:
         self.burp_force_diectory = Scanner(self.url,self.save_pool)
         self.sqli = SqliMain(self.save_pool)
         self.harvest = TheHarvester(self.url,self.save_pool)
-        #self.burp_user = BurpUser(self.lg_url,self.save_pool)
+        self.burp_user = BurpUser(self.lg_url,self.save_pool)
+        self.burp_XSS = BruteXSS(self.save_pool)
 
     def start_modules(self):
         '''多线程执行模块的运行方法'''
@@ -202,7 +207,8 @@ class base:
         _thread.start_new_thread(self.burp_force_diectory.more_threads,())
         _thread.start_new_thread(self.sqli.run,())
         _thread.start_new_thread(self.harvest.start_search,())
-        #_thread.start_new_thread(self.burp_user.run,())
+        _thread.start_new_thread(self.burp_user.run,())
+        _thread.start_new_thread(self.burp_XSS.run,())
 
 
     def module_check(self):
@@ -218,6 +224,8 @@ class base:
             return_list.append(self.harvest.is_finished())
         if self.info['burp_user_args'] == 'burp':
             return_list.append(self.burp_user.is_finished())
+        if self.info['burp_XSS_args'] == 'run':
+            return_list.append(self.burp_XSS.is_finished())
         return return_list
 
 
@@ -239,6 +247,8 @@ while False in ma.module_check() :
             print(ma.harvest.is_finished(),end='')
         elif x == 'burp_user':
             print(ma.burp_user.is_finished(),end='')
+        elif x == 'XSS':
+            print(ma.burp_XSS.is_finished(),end='')
     print(' ',end='\r')
     time.sleep(5)
     timer+=5
