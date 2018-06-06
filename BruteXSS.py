@@ -18,18 +18,26 @@ import sys
 class BruteXSS(object):
 
     def __init__(self, savepool):
-        self.redis_out = '' #输出给共享池的''
+        self.redis_out = '' #输出给共享池的
         self.isfinish = False #是否跑完
         self.save_pool = savepool # 开启本地radis
         self.pool = redis.Redis(connection_pool=self.save_pool)  # 创建一个连接实例
 
-        self.thread_num = 100
+        self.thread_num = 50
         self.thread_max = threading.BoundedSemaphore(self.thread_num)
 
-
     def run(self):
+        '''
+        获取base 参数 burp_XSS_args
+        :return:
+        '''
+        action = self.pool.hget('base', 'burp_XSS_args')
+        if action == 'run':
+            self.brute()
+
+    def brute(self):
         old_url =[]
-        while(self.pool.get('finished')=='False'):
+        while self.pool.get('finished') == 'False':
             urls = self.pool.smembers("Spider_full_urls")
             for url in urls :
                 if url not in old_url:
@@ -39,7 +47,6 @@ class BruteXSS(object):
                     url_real.join()
             old_url = urls
 
-        self.Redis_Outputer()
         self.isfinish = True
 
     def is_finished(self):
@@ -50,7 +57,7 @@ class BruteXSS(object):
         键设置为 :XSS_hole
         :return:
         '''
-        self.pool.set('XSS_hole', self.redis_out)
+        self.pool.sadd('XSS_hole', self.redis_out)
 
 
     def wordlistimport(self, file,lst):
@@ -105,7 +112,9 @@ class BruteXSS(object):
                         sourececode = page.read().decode()
                         if x in sourececode: #如果输入的内容完整在网页里，则认为是存在XSS
                             print(("\n[!] XSS Vulnerability Found!\n"+"value: "+pn +" \npayload: " +x))
-                            self.redis_out += url +" "+ pn +" "+ x +'\n'
+                            self.redis_out = url +" "+ pn +" "+ x
+                            self.Redis_Outputer()
+
                             break
 
             except(http.client.HTTPResponse) as Exit:
