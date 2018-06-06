@@ -76,7 +76,7 @@ class BurpUser:
         if self.url:
             self.url = self.burp_user_redis.hget('base', 'login_url')
         self.default_length = len(requests.post(self.url, headers=headers,
-                                            data={u_p: '', p_p: ''}).content)    
+                                            data={self.user_param: '', self.pass_param: ''}).content)    
         if self.action == 'burp':
             self.burp()
             
