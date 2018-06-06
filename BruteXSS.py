@@ -37,7 +37,7 @@ class BruteXSS(object):
 
     def brute(self):
         old_url =[]
-        while self.pool.get('finished') == 'False':
+        while self.pool.get('spider_redis') == 'False':
             urls = self.pool.smembers("Spider_full_urls")
             for url in urls :
                 if url not in old_url:
