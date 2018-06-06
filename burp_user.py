@@ -74,9 +74,9 @@ class BurpUser:
         self.burp_user_redis = redis.Redis(connection_pool=self.savepool)
         
     def run(self):
-        self.action = self.burp_user_redis.get('base', 'burp_user_args')
+        self.action = self.burp_user_redis.hget('base', 'burp_user_args')
         if self.url == '':
-            self.url = self.burp_user_redis.get('base', 'login_url')
+            self.url = self.burp_user_redis.hget('base', 'login_url')
         if self.action == 'burp':
             self.burp()
             
