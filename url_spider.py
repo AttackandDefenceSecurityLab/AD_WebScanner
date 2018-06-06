@@ -123,12 +123,14 @@ class SpiderMain:
         self.savepool = savepool
         self.redis_connect()
         self.finished = False
+        self.spider_redis.set('spider_redis', 'False')
 
     def run(self):
         self.redis_get()
         if self.action == 'craw':
             self.craw()
         self.finished = True
+        self.spider_redis.set('spider_redis', 'True')
 
     def is_finished(self):
         return self.finished
