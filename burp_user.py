@@ -21,8 +21,6 @@ class BurpUser:
         self.url = url
         self.user_param = u_p
         self.pass_param = p_p
-        self.default_length = len(requests.post(self.url, headers=headers,
-                                                data={u_p: '', p_p: ''}).content)
         self.load_dict()
         self.threadmax = threading.BoundedSemaphore(self.threadnum)
         self.savepool = savepool
@@ -75,8 +73,10 @@ class BurpUser:
         
     def run(self):
         self.action = self.burp_user_redis.hget('base', 'burp_user_args')
-        if self.url == '':
+        if self.url:
             self.url = self.burp_user_redis.hget('base', 'login_url')
+        self.default_length = len(requests.post(self.url, headers=headers,
+                                            data={u_p: '', p_p: ''}).content)    
         if self.action == 'burp':
             self.burp()
             
