@@ -28,17 +28,17 @@ def check(urls):
             results[url] = result
         childs.append(pool.apply_async(__getserverinfo, (url, ), callback=callback))
 
-    try:
-        while True:
-            time.sleep(0.5)
-            if all([child.ready() for child in childs]):
-                break
-    except Exception:
-        pool.terminate()
-        pool.join()
-    else:
-        pool.close()
-        pool.join()
+    # try:
+    while True:
+        time.sleep(0.5)
+        if all([child.ready() for child in childs]):
+            break
+    # except Exception:
+    #     pool.terminate()
+    #     pool.join()
+    # else:
+    pool.close()
+    pool.join()
 
     # 
     # 

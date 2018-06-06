@@ -107,16 +107,16 @@ class SqliMain(object):
         self.savepool = savepool
         self.sqli_redis = redis_connect(self.savepool)
         self.finished = False
-        action = self.sqli_redis.get('sqli_args')
-        if action == 'run':
-            self.run()
 
     def run(self):
-        urlset = self.sqli_redis.smembers("Spider_full_urls")
-        vulnerables = scan(urlset)
-        result = is_vulnerable(vulnerables)
-        self.finished = result[0]
-        self.redis_set(result[1])
+        self.action = self.sqli_redis.get('sqli_args')
+        if self.action == 'run':
+            urlset = self.sqli_redis.smembers("Spider_full_urls")
+            self.action = self.sqli_redis.get('sqli_args')
+            vulnerables = scan(urlset)
+            result = is_vulnerable(vulnerables)
+            self.finished = result[0]
+            self.redis_set(result[1])
 
     def redis_set(self, url):
         #store vulnerableurls
@@ -128,6 +128,7 @@ class SqliMain(object):
 
     def is_finished(self):
         return self.finished
+
 
 
 
