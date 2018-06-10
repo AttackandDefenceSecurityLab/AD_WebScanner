@@ -110,9 +110,14 @@ class SqliMain(object):
 
     def run(self):
         self.action = self.sqli_redis.get('sqli_args')
+        while True:
+            finished = self.sqli_redis.get('spider_redis')
+            if finished == 'True':
+                print("good")
+                break
+            time.sleep(20)
         if self.action == 'run':
             urlset = self.sqli_redis.smembers("Spider_full_urls")
-            self.action = self.sqli_redis.get('sqli_args')
             vulnerables = scan(urlset)
             result = is_vulnerable(vulnerables)
             self.finished = result[0]
