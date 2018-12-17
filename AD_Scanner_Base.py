@@ -104,7 +104,8 @@ class base:
         '''
         #所有参数传入redis
         for x in self.info.keys():
-            self.base_redis.hset('base',x,self.info[x])
+            if self.info[x] != None:
+                self.base_redis.hset('base',x,self.info[x])
         print('optiopns:\n')
         for x in self.base_redis.hkeys('base'):
             print(x+':'+self.base_redis.hget('base',x))

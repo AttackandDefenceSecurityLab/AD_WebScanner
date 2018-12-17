@@ -1,0 +1,7 @@
+URL:http://testphp.vulnweb.com
+
+
+
+the_harvest:
+--------------------------------------
+1:  domain:testhtml5.vulnweb.com    mail:'@vulnweb.com

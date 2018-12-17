@@ -101,3 +101,5 @@ ENV/
 .mypy_cache/
 *.iml
 *.xml
+scanner.py
+scanner.py
