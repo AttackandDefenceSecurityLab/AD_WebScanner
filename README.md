@@ -64,5 +64,11 @@ class demo(url,save_pool,....):
 - bs4
 - urllib
 
+# 可视化页面
+- 使用flask+html+css编写
+- 确保templates+static这两个文件夹在index.py的同一文件夹下
+- 需手动把AD_Scanner_Base.py文件中最后一行的input()给注释掉方可正常使用该模块
+- 用flask编译器启动index.py，在浏览器输入127.0.0.1:5000访问
+
 # 参考
 https://github.com/We5ter/Scanners-Box
