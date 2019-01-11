@@ -1,0 +1,120 @@
+body{
+	font-family: 'Microsoft YaHei', sans-serif;
+}
+body a{
+	transition: 0.5s all;
+	-webkit-transition: 0.5s all;
+	-o-transition: 0.5s all;
+	-moz-transition: 0.5s all;
+	-ms-transition: 0.5s all;
+}
+ ul{
+	padding: 0;
+	margin: 0;
+}
+h1,h2,h3,h4,h5,h6{
+	margin:0;
+font-family: 'Microsoft YaHei UI Light', sans-serif;
+}
+p{
+	padding: 0;
+	margin: 0;
+	color:#999;
+	font-family: 'Microsoft YaHei', sans-serif;
+}
+/*--banner--*/
+
+/*---*/
+nav a {
+	position: relative;
+	display: inline-block;
+	outline: none;
+	text-decoration: none;
+}
+nav a:hover,
+nav a:focus {
+	outline: none;
+}
+.banner-section {
+    background:url(../images/banner.jpg) no-repeat 0px 0px;
+	background-size:cover;
+    background-attachment:fixed;
+	text-align:center;
+	-webkit-background-size: cover;
+    -o-background-size: cover;
+    -ms-background-size: cover;
+    -moz-background-size: cover;
+}
+.tlinks{text-indent:-9999px;height:0;line-height:0;font-size:0;overflow:hidden;}
+.banner-grids {
+    background: rgba(95, 109, 133, 0.8);
+    padding: 2.5em;
+}
+.banner-heder {
+    margin: 17em 0 3em;
+}
+.banner-heder h3 {
+    font-size: 4em;
+    color: #fff;
+	font-weight:600;
+}
+.banner-heder span {
+    display: block;
+}
+.sel {
+    width: 100%;
+    padding: .3em 1em;
+    font-size: 1em;
+    outline: none;
+    text-transform: none;
+    border: 1px solid #BBBBBB;
+}
+.check {
+    width:auto;
+    font-size: 16px;
+    text-align: left;
+    color: #fff;
+    outline: none;
+}
+.search button[type="submit"] {
+    width: 100%;
+    background: #062f3c;
+    border: none;
+    outline: none;
+    color: #fff;
+    height: 100%;
+    padding: 0px;
+    max-height: 70px;
+    font-size: 15px;
+}
+.content {
+    background: rgba(95, 109, 133, 0.4);
+    margin:0 5% 0% 5%;
+}
+.textarea {
+    width: 99%;
+    background:transparent;
+    border-style:none;
+    resize: none;
+    color: #ffffff;
+    outline: none;
+    font-size: 22px;
+}
+.banner-header {
+    margin: 1% 4% 1% 4%;
+    height: 75%;
+    width: 80%; 
+}
+.hide {
+    display: none;
+}
+.banner-grids p {
+    font-size: 16px;
+    padding: 2px;
+}
+.banner-header p {
+    font-size: 13px;
+}
+.box {
+    font-size: 13px;
+}

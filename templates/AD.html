@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>A&D Web Scanner</title>
+<link href="static/css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+<script src="static/js/jquery.min.js"></script>
+<link href="static/css/style.css" rel="stylesheet" type="text/css" media="all" />	
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta property="og:title" content="Vide" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="static/js/bootstrap.min.js"></script>
+</head>
+<body class="banner-section">
+		<div class="container">
+			<div class="banner-heder">
+				<h3>A&D Web Scanner<span>To Find What You Need</span></h3>
+			</div>
+			<div class="banner-grids">
+				<div class="col-md-12 search" id="box">
+					<form action="#" method="post" name="test">
+						<div class="col-md-9">
+							<input class="sel" type="text" placeholder="Please Input The URL" name="URL">
+
+						</div>
+						<div class="col-md-3">
+								<button type="submit" value="Search" id="Search" style="font-size: 20px;">Search</button>
+						</div>
+						<script>
+        					$(window).load(function() {
+        						document.getElementById("Search").style.height=$('#box').height()+"px";
+        						window.onresize=function(){
+								console.log(window.innerHeight);
+								document.getElementById("Search").style.height=$('#box').height()+"px";
+								}
+        					});			
+    					</script>
+					</form>
+				</div>
+				<div class="clearfix">
+				</div>
+			</div>
+		</div>
+</body>
+</html>
