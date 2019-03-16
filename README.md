@@ -28,7 +28,7 @@ class demo(url,save_pool,....):
 - 建议使用redis的hash存储，类型为`'模块名':'键':'值'`，如`hset('base','url',url)`
 - 存储聚合数据类型时（如list/set)，使用redis的list/set存储，键名为模块名-键名，如`redis.sadd('base-input_opt','100)`
 - 如果使用string\list\set存储类型，即视为共用的存储对象，各模块均有读写权限
-- 进行radis的写入/读取操作的方法后注释说明传入/读取值的名称和类型
+- 进行redis的写入/读取操作的方法后注释说明传入/读取值的名称和类型
 
 ## 通用约束
 - 模块内每个方法声明后注释传入参数的类型/说明，返回值的类型/说明
@@ -54,7 +54,7 @@ class demo(url,save_pool,....):
 - [ ] 中间件扫描或者指纹扫描
 - [ ] 无线网络扫描
 - [ ] 端口扫描(xuxu)
-- [ ] 图形化界面
+- [x] 图形化界面
 - to be continued
 
 # 依赖
